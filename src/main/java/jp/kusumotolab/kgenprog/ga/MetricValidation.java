@@ -1,76 +1,38 @@
 package jp.kusumotolab.kgenprog.ga;
 
+import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
+import jp.kusumotolab.kgenprog.project.ProductSourcePath;
 import jp.kusumotolab.kgenprog.project.test.TestResults;
 import spoon.Launcher;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.CtScanner;
 
 public class MetricValidation implements SourceCodeValidation {
 
+  private static final Logger log = LoggerFactory.getLogger(MetricValidation.class);
+
   @Override
   public Fitness exec(GeneratedSourceCode sourceCode, TestResults testResults) {
+    if (!sourceCode.isGenerationSuccess()) {
+      return new SimpleFitness(testResults.getSuccessRate());
+    }
+
     // todo: retrieve appropriate class
-    final GeneratedAST ast = sourceCode.getAsts()
-        .get(0);
+    ProductSourcePath sourcePath = new ProductSourcePath(
+        Paths.get("example/refactoring/GeometricMean/src/example/GeometricMean.java"));
+    final GeneratedAST ast = sourceCode.getAst(sourcePath);
+
+    log.debug("\n{}", ast.getSourceCode());
+
     final CtClass clazz = Launcher.parseClass(ast.getSourceCode());
     final ComplexityScanner scanner = new ComplexityScanner();
-
     clazz.accept(scanner);
-    final double fitness = 1.0 / scanner.getComplexity();
 
-    return new SimpleFitness(fitness);
-  }
+    final double fitness = scanner.getComplexity();
 
-  private static class ComplexityScanner extends CtScanner {
-
-    private int complexity = 1;
-
-    public int getComplexity() {
-      return complexity;
-    }
-
-    @Override
-    public void visitCtIf(final CtIf ifElement) {
-      ++complexity;
-      super.visitCtIf(ifElement);
-    }
-
-    @Override
-    public void visitCtFor(final CtFor forLoop) {
-      ++complexity;
-      super.visitCtFor(forLoop);
-    }
-
-    @Override
-    public void visitCtForEach(final CtForEach foreach) {
-      ++complexity;
-      super.visitCtForEach(foreach);
-    }
-
-    @Override
-    public void visitCtWhile(final CtWhile whileLoop) {
-      ++complexity;
-      super.visitCtWhile(whileLoop);
-    }
-
-    @Override
-    public void visitCtDo(final CtDo whileLoop) {
-      ++complexity;
-      super.visitCtDo(whileLoop);
-    }
-
-    @Override
-    public <T> void visitCtConditional(final CtConditional<T> conditional) {
-      ++complexity;
-      super.visitCtConditional(conditional);
-    }
+    return new MetricFitness(fitness, testResults.getSuccessRate());
   }
 }
