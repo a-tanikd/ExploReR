@@ -49,4 +49,22 @@ public class SmellLocalizationTest {
     assertThat(suspiciousnesses).extracting(Suspiciousness::getValue)
         .allMatch(susp -> susp.equals(1.0));
   }
+
+  @Test
+  public void testNestedSuspiciousness() {
+    final Path rootPath = Paths.get("example/refactoring/GeometricMean");
+    final TargetProject targetProject = TargetProjectFactory.create(rootPath);
+    final Configuration config = new Configuration.Builder(targetProject).build();
+    final Variant initialVariant = TestUtil.createVariant(config);
+
+    final FaultLocalization fl = new SmellLocalization();
+    final List<Suspiciousness> suspiciousnesses =
+        fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
+
+    // todo: assert more strictly
+    assertThat(suspiciousnesses).hasSize(26);
+
+    assertThat(suspiciousnesses).extracting(Suspiciousness::getValue)
+        .allMatch(susp -> susp.equals(1.0));
+  }
 }
