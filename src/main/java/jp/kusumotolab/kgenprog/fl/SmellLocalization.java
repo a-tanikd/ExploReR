@@ -2,6 +2,7 @@ package jp.kusumotolab.kgenprog.fl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import jp.kusumotolab.kgenprog.project.ASTLocation;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
@@ -25,12 +26,13 @@ public class SmellLocalization implements FaultLocalization {
           continue;
         }
 
-        final ASTLocation location = locations.get(locations.size() - 1);
-        // todo: calculate smell
-        suspiciousnesses.add(new Suspiciousness(location, 1.0));
+        suspiciousnesses.addAll(locations.stream()
+            .map(location -> new Suspiciousness(location, 1.0)) // todo: calculate smell
+            .collect(Collectors.toList()));
       }
     }
 
+    // todo: remove duplicated elements
     return suspiciousnesses;
   }
 
