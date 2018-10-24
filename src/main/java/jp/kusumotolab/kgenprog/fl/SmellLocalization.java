@@ -14,7 +14,7 @@ public class SmellLocalization implements FaultLocalization {
       TestResults testResults) {
     final List<Suspiciousness> suspiciousnesses = new ArrayList<>();
 
-    for (final GeneratedAST ast : generatedSourceCode.getAsts()) {
+    for (final GeneratedAST ast : generatedSourceCode.getProductAsts()) {
       final String code = ast.getSourceCode();
       final int lastLineNumber = countLines(code);
 

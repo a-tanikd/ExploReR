@@ -23,7 +23,7 @@ public class MetricValidation implements SourceCodeValidation {
     // todo: retrieve appropriate class
     ProductSourcePath sourcePath = new ProductSourcePath(
         Paths.get("example/refactoring/GeometricMean/src/example/GeometricMean.java"));
-    final GeneratedAST ast = sourceCode.getAst(sourcePath);
+    final GeneratedAST ast = sourceCode.getProductAst(sourcePath);
 
     log.debug("\n{}", ast.getSourceCode());
 

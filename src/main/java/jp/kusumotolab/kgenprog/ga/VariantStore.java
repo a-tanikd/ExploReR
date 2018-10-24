@@ -149,7 +149,7 @@ public class VariantStore {
   private Variant createInitialVariant() {
     final GeneratedSourceCode sourceCode = strategies.execASTConstruction(targetProject);
 
-    final GeneratedAST ast = sourceCode.getAsts()
+    final GeneratedAST ast = sourceCode.getProductAsts()
         .get(0);
     final CtClass clazz = Launcher.parseClass(ast.getSourceCode());
     final ComplexityScanner scanner = new ComplexityScanner();
