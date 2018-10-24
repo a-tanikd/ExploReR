@@ -1,11 +1,9 @@
 package jp.kusumotolab.kgenprog.ga;
 
-import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
-import jp.kusumotolab.kgenprog.project.ProductSourcePath;
 import jp.kusumotolab.kgenprog.project.test.TestResults;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
@@ -21,9 +19,7 @@ public class MetricValidation implements SourceCodeValidation {
     }
 
     // todo: retrieve appropriate class
-    ProductSourcePath sourcePath = new ProductSourcePath(
-        Paths.get("example/refactoring/GeometricMean/src/example/GeometricMean.java"));
-    final GeneratedAST ast = sourceCode.getAst(sourcePath);
+    final GeneratedAST ast = sourceCode.getProductAsts().get(0);
 
     log.debug("\n{}", ast.getSourceCode());
 
