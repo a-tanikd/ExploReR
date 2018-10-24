@@ -8,7 +8,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.visitor.CtScanner;
 
-class ComplexityScanner extends CtScanner {
+public class ComplexityScanner extends CtScanner {
 
   private int complexity = 1;
 

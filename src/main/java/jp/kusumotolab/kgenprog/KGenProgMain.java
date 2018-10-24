@@ -4,17 +4,23 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jp.kusumotolab.kgenprog.fl.FaultLocalization;
+import jp.kusumotolab.kgenprog.ga.ComplexityScanner;
 import jp.kusumotolab.kgenprog.ga.Crossover;
+import jp.kusumotolab.kgenprog.ga.MetricFitness;
 import jp.kusumotolab.kgenprog.ga.Mutation;
 import jp.kusumotolab.kgenprog.ga.SourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.SourceCodeValidation;
 import jp.kusumotolab.kgenprog.ga.Variant;
 import jp.kusumotolab.kgenprog.ga.VariantSelection;
 import jp.kusumotolab.kgenprog.ga.VariantStore;
+import jp.kusumotolab.kgenprog.project.GeneratedAST;
+import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.PatchGenerator;
 import jp.kusumotolab.kgenprog.project.PatchesStore;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTConstruction;
 import jp.kusumotolab.kgenprog.project.test.TestExecutor;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtClass;
 
 public class KGenProgMain {
 
@@ -59,6 +65,8 @@ public class KGenProgMain {
     mutation.setCandidates(initialVariant.getGeneratedSourceCode()
         .getProductAsts());
 
+    initMetricFitness(initialVariant.getGeneratedSourceCode());
+
     final StopWatch stopwatch = new StopWatch(config.getTimeLimitSeconds());
     stopwatch.start();
 
@@ -98,6 +106,14 @@ public class KGenProgMain {
 
     log.debug("exit run()");
     return variantStore.getFoundSolutions(config.getRequiredSolutionsCount());
+  }
+
+  private void initMetricFitness(final GeneratedSourceCode sourceCode) {
+    final GeneratedAST ast = sourceCode.getProductAsts().get(0);
+    final CtClass clazz = Launcher.parseClass(ast.getSourceCode());
+    final ComplexityScanner scanner = new ComplexityScanner();
+    clazz.accept(scanner);
+    MetricFitness.init(scanner.getComplexity());
   }
 
   private boolean reachedMaxGeneration(final OrdinalNumber generation) {
