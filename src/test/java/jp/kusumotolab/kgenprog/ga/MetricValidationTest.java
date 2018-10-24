@@ -23,7 +23,7 @@ public class MetricValidationTest {
     final Fitness fitness =
         validation.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
-    final double expected = 0.5;
+    final double expected = 2.0;
     assertThat(fitness.getValue()).isCloseTo(expected, within(0.001));
   }
 }
