@@ -6,14 +6,30 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.CtScanner;
 
 public class ComplexityScanner extends CtScanner {
 
-  private int complexity = 1;
+  private int complexity = 0;
 
   public int getComplexity() {
     return complexity;
+  }
+
+  @Override
+  public <T> void visitCtConstructor(CtConstructor<T> c) {
+    if (!c.isImplicit()) {
+      ++complexity;
+    }
+    super.visitCtConstructor(c);
+  }
+
+  @Override
+  public <T> void visitCtMethod(CtMethod<T> m) {
+    ++complexity;
+    super.visitCtMethod(m);
   }
 
   @Override

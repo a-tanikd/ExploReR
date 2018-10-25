@@ -17,18 +17,22 @@ public class MetricValidation implements SourceCodeValidation {
     if (!sourceCode.isGenerationSuccess()) {
       return new SimpleFitness(testResults.getSuccessRate());
     }
-
-    // todo: retrieve appropriate class
-    final GeneratedAST ast = sourceCode.getProductAsts().get(0);
-
-    log.debug("\n{}", ast.getSourceCode());
-
-    final CtClass clazz = Launcher.parseClass(ast.getSourceCode());
-    final ComplexityScanner scanner = new ComplexityScanner();
-    clazz.accept(scanner);
-
-    final double fitness = scanner.getComplexity();
+    final double fitness = calculateFitness(sourceCode);
 
     return new MetricFitness(fitness, testResults.getSuccessRate());
+  }
+
+  private double calculateFitness(GeneratedSourceCode sourceCode) {
+    final ComplexityScanner scanner = new ComplexityScanner();
+
+    // calculate sum of Cyclomatic Complexity of each method in each class
+    for (GeneratedAST ast : sourceCode.getProductAsts()) {
+      log.debug("\n{}", ast.getSourceCode());
+      final CtClass clazz = Launcher.parseClass(ast.getSourceCode());
+      clazz.accept(scanner);
+    }
+
+    return (double) scanner.getComplexity() / sourceCode.getProductAsts()
+        .size();
   }
 }
