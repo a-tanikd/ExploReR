@@ -3,6 +3,7 @@ package jp.kusumotolab.kgenprog.project.jdt;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
@@ -13,9 +14,8 @@ import jp.kusumotolab.kgenprog.project.SourcePath;
 /**
  * JDT AST の単一ノードを示すオブジェクト Operation のターゲットに利用する
  *
- * @see jp.kusumotolab.kgenprog.JDTOperaion
  * @author r-arima
- *
+ * @see jp.kusumotolab.kgenprog.JDTOperaion
  */
 final public class JDTASTLocation implements ASTLocation {
 
@@ -103,5 +103,23 @@ final public class JDTASTLocation implements ASTLocation {
         compilationUnit.getLineNumber(this.node.getStartPosition() + this.node.getLength());
 
     return new LineNumberRange(start, end);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    JDTASTLocation that = (JDTASTLocation) o;
+    return Objects.equals(node, that.node) &&
+        Objects.equals(getSourcePath(), that.getSourcePath());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(node, getSourcePath());
   }
 }

@@ -3,7 +3,6 @@ package jp.kusumotolab.kgenprog.fl;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
 import java.util.List;
 import org.junit.Test;
 import jp.kusumotolab.kgenprog.Configuration;
@@ -25,11 +24,8 @@ public class SmellLocalizationTest {
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
-    suspiciousnesses.sort(Comparator.comparing(Suspiciousness::getValue)
-        .reversed());
-
     assertThat(suspiciousnesses).extracting(Suspiciousness::getValue)
-        .allMatch(susp -> susp.equals(1.0));
+        .containsExactlyInAnyOrder(1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
   @Test
@@ -43,15 +39,12 @@ public class SmellLocalizationTest {
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
-    suspiciousnesses.sort(Comparator.comparing(Suspiciousness::getValue)
-        .reversed());
-
     assertThat(suspiciousnesses).extracting(Suspiciousness::getValue)
-        .allMatch(susp -> susp.equals(1.0));
+        .containsExactlyInAnyOrder(1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   }
 
   @Test
-  public void testNestedSuspiciousness() {
+  public void testForGeometricMean() {
     final Path rootPath = Paths.get("example/refactoring/GeometricMean");
     final TargetProject targetProject = TargetProjectFactory.create(rootPath);
     final Configuration config = new Configuration.Builder(targetProject).build();
@@ -61,10 +54,7 @@ public class SmellLocalizationTest {
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
-    // todo: assert more strictly
-    assertThat(suspiciousnesses).hasSize(26);
-
     assertThat(suspiciousnesses).extracting(Suspiciousness::getValue)
-        .allMatch(susp -> susp.equals(1.0));
+        .containsExactlyInAnyOrder(1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   }
 }
