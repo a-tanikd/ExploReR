@@ -109,11 +109,19 @@ public class KGenProgMain {
   }
 
   private void initMetricFitness(final GeneratedSourceCode sourceCode) {
-    final GeneratedAST ast = sourceCode.getProductAsts().get(0);
-    final CtClass clazz = Launcher.parseClass(ast.getSourceCode());
     final ComplexityScanner scanner = new ComplexityScanner();
-    clazz.accept(scanner);
-    MetricFitness.init(scanner.getComplexity());
+
+    // calculate sum of Cyclomatic Complexity of each method in each class
+    for (GeneratedAST ast : sourceCode.getProductAsts()) {
+      log.debug("\n{}", ast.getSourceCode());
+      final CtClass clazz = Launcher.parseClass(ast.getSourceCode());
+      clazz.accept(scanner);
+    }
+
+    final double fitness = (double) scanner.getComplexity() / sourceCode.getProductAsts()
+        .size();
+
+    MetricFitness.init(fitness);
   }
 
   private boolean reachedMaxGeneration(final OrdinalNumber generation) {
