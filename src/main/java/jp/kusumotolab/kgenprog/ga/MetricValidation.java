@@ -32,7 +32,7 @@ public class MetricValidation implements SourceCodeValidation {
       clazz.accept(scanner);
     }
 
-    return (double) scanner.getComplexity() / sourceCode.getProductAsts()
+    return scanner.getMetric() / sourceCode.getProductAsts()
         .size();
   }
 }

@@ -118,7 +118,7 @@ public class KGenProgMain {
       clazz.accept(scanner);
     }
 
-    final double fitness = (double) scanner.getComplexity() / sourceCode.getProductAsts()
+    final double fitness = scanner.getMetric() / sourceCode.getProductAsts()
         .size();
 
     MetricFitness.init(fitness);
