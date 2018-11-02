@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import jp.kusumotolab.kgenprog.fl.FaultLocalization;
 import jp.kusumotolab.kgenprog.fl.SmellLocalization;
+import jp.kusumotolab.kgenprog.ga.ComplexityValidation;
 import jp.kusumotolab.kgenprog.ga.Crossover;
 import jp.kusumotolab.kgenprog.ga.DefaultSourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.DefaultVariantSelection;
-import jp.kusumotolab.kgenprog.ga.MetricValidation;
 import jp.kusumotolab.kgenprog.ga.Mutation;
 import jp.kusumotolab.kgenprog.ga.RandomMutation;
 import jp.kusumotolab.kgenprog.ga.RouletteStatementSelection;
@@ -38,7 +38,7 @@ public class CUILauncher {
         new RandomMutation(config.getSiblingsCount(), random, rouletteStatementSelection);
     final Crossover crossover = new SinglePointCrossover(random);
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();
-    final SourceCodeValidation sourceCodeValidation = new MetricValidation();
+    final SourceCodeValidation sourceCodeValidation = new ComplexityValidation();
     final VariantSelection variantSelection = new DefaultVariantSelection(config.getHeadcount());
     final PatchGenerator patchGenerator = new PatchGenerator();
 
