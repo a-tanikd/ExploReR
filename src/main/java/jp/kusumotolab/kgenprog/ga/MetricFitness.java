@@ -1,5 +1,8 @@
 package jp.kusumotolab.kgenprog.ga;
 
+import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
+import jp.kusumotolab.kgenprog.project.test.EmptyTestResults;
+
 public class MetricFitness implements Fitness {
 
   private static double INITIAL_METRIC = -1;
@@ -12,12 +15,15 @@ public class MetricFitness implements Fitness {
     this.testSuccessRate = testSuccessRate;
   }
 
-  public static void init(final double initialMetric) {
-    if (initialMetric == -1) {
+  public static void init(GeneratedSourceCode sourceCode,
+      SourceCodeValidation validation) {
+
+    if (INITIAL_METRIC != -1) {
       throw new UnsupportedOperationException();
     }
 
-    INITIAL_METRIC = initialMetric;
+    Fitness initialFitness = validation.exec(sourceCode, EmptyTestResults.instance);
+    INITIAL_METRIC = initialFitness.getValue();
   }
 
   @Override

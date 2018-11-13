@@ -8,13 +8,16 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.visitor.CtScanner;
 
-public class ComplexityScanner extends CtScanner {
+public class ComplexityScanner extends MetricScanner {
 
   private int complexity = 0;
 
-  public int getComplexity() {
+  /**
+   * @return The sum of Cyclomatic Complexity of each method in scanned class
+   */
+  @Override
+  public double getMetric() {
     return complexity;
   }
 

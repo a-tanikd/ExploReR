@@ -10,7 +10,7 @@ import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
 import jp.kusumotolab.kgenprog.testutil.TestUtil;
 
-public class MetricValidationTest {
+public class ComplexityValidationTest {
 
   @Test
   public void testExecSingleClass() {
@@ -19,7 +19,7 @@ public class MetricValidationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final MetricValidation validation = new MetricValidation();
+    final MetricValidation validation = new ComplexityValidation();
     final Fitness fitness =
         validation.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
@@ -34,11 +34,11 @@ public class MetricValidationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final MetricValidation validation = new MetricValidation();
+    final MetricValidation validation = new ComplexityValidation();
     final Fitness fitness =
         validation.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
-    final double expected = (3.0 + 2.0) / 2;
+    final double expected = 3.0 + 2.0;
     assertThat(fitness.getValue()).isCloseTo(expected, within(0.001));
 
   }
