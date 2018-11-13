@@ -60,9 +60,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.lucene/lucene-spellchecker
     // compile group: 'org.apache.lucene', name: 'lucene-spellchecker', version: '3.6.2'
 
-    // https://mvnrepository.com/artifact/org.ow2.asm/asm
-    compile group: 'org.ow2.asm', name: 'asm', version: '6.2'
-
     // https://mvnrepository.com/artifact/com.github.wumpz/diffutils
     compile group: 'com.github.wumpz', name: 'diffutils', version: '2.2'
 
@@ -86,3 +83,14 @@ dependencies {
     // https://mvnrepository.com/artifact/fr.inria.gforge.spoon/spoon-core
     compile group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '7.0.0'
 }
+
+jar {
+  // Specify App's entry point
+  manifest {
+    attributes "Main-Class": "jp.kusumotolab.kgenprog.CUILauncher"
+  }
+  from { (configurations.runtime).collect { it.isDirectory() ? it : zipTree(it) } } {
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+  }
+}
+
