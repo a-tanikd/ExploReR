@@ -62,6 +62,13 @@ public abstract class JDTOperation implements Operation {
         .constructAST(ast.getSourcePath(), document.get());
   }
 
+  /**
+   * 指定したASTの指定した位置に対して操作を適用する．
+   *
+   * @param ast 操作対象のAST
+   * @param location 操作する場所
+   * @param astRewrite 操作に用いるASTRewrite
+   */
   protected abstract <T extends SourcePath> void applyToASTRewrite(final GeneratedJDTAST<T> ast,
       final JDTASTLocation location, final ASTRewrite astRewrite);
 

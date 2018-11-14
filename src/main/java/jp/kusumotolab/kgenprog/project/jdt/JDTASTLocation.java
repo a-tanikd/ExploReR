@@ -28,6 +28,12 @@ final public class JDTASTLocation implements ASTLocation {
     this.sourcePath = sourcePath;
   }
 
+  /**
+   * 指定された ASTNode がこの Location が表現する ASTNode 内のどこに相当するかを返す．
+   *
+   * @param otherASTRoot この Location において対応する ASTNode を取得したい ASTNode
+   * @return 指定された ASTNode がこの Location が表現する ASTNode 内で相当する ASTNode．
+   */
   public ASTNode locate(final ASTNode otherASTRoot) {
     final List<TreePathElement> treePaths = new ArrayList<TreePathElement>();
     ASTNode currentNode = node;
