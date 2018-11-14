@@ -76,6 +76,7 @@ public class KGenProgMainTest {
         sourceCodeValidation, variantSelection, patchGenerator);
   }
 
+  @Ignore
   @Test
   public void testCloseToZero01() {
     final Path rootPath = Paths.get("example/CloseToZero01");
@@ -89,6 +90,7 @@ public class KGenProgMainTest {
         .allMatch(Variant::isCompleted);
   }
 
+  @Ignore
   @Test
   public void testCloseToZero02() {
     final Path rootPath = Paths.get("example/CloseToZero02");
@@ -102,6 +104,7 @@ public class KGenProgMainTest {
         .allMatch(Variant::isCompleted);
   }
 
+  @Ignore
   @Test
   public void testCloseToZero03() {
     final Path rootPath = Paths.get("example/CloseToZero03");
@@ -115,6 +118,7 @@ public class KGenProgMainTest {
         .allMatch(Variant::isCompleted);
   }
 
+  @Ignore
   @Test
   public void testCloseToZero04() {
     final Path rootPath = Paths.get("example/CloseToZero04");
