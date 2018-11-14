@@ -11,6 +11,8 @@ import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.WhileStatement;
+import jp.kusumotolab.kgenprog.project.ASTLocation;
+import jp.kusumotolab.kgenprog.project.ASTLocations;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
@@ -26,18 +28,19 @@ public class SmellLocalization implements FaultLocalization {
     for (final GeneratedAST ast : generatedSourceCode.getProductAsts()) {
       final String code = ast.getSourceCode();
       final int lastLineNumber = countLines(code);
+      final ASTLocations astLocations = ast.createLocations();
 
       for (int line = 1; line <= lastLineNumber; ++line) {
-        // todo: remove down cast
-        final List<JDTASTLocation> locations = ast.inferLocations(line);
+        final List<ASTLocation> locations = astLocations.infer(line);
 
         if (locations.isEmpty()) {
           continue;
         }
 
-        for (JDTASTLocation location : locations) {
+        for (ASTLocation location : locations) {
           final ComplexityVisitor visitor = new ComplexityVisitor();
-          location.node.accept(visitor);
+          // todo: remove down cast
+          ((JDTASTLocation)location).node.accept(visitor);
           suspiciousnesses.add(new Suspiciousness(location, visitor.getComplexity()));
         }
       }
