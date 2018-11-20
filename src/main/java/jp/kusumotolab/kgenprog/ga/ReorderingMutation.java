@@ -6,13 +6,16 @@ import java.util.Random;
 import java.util.function.Function;
 import org.eclipse.jdt.core.dom.ASTNode;
 import jp.kusumotolab.kgenprog.fl.Suspiciousness;
+import jp.kusumotolab.kgenprog.project.ASTLocation;
+import jp.kusumotolab.kgenprog.project.FullyQualifiedName;
+import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.jdt.SwapOperation;
 
 public class ReorderingMutation extends Mutation {
 
   public ReorderingMutation(final int mutationGeneratingCount, final Random random,
-      final CandidateSelection candidateSelection) {
-    super(mutationGeneratingCount, random, candidateSelection);
+      final CandidateSelection candidateSelection, Scope.Type type) {
+    super(mutationGeneratingCount, random, candidateSelection, type);
   }
 
   @Override
@@ -39,8 +42,11 @@ public class ReorderingMutation extends Mutation {
       final Roulette<Suspiciousness> suspiciousnessRoulette =
           new Roulette<>(suspiciousnesses, weightFunction, random);
       final Suspiciousness suspiciousness = suspiciousnessRoulette.exec();
+      final ASTLocation location = suspiciousness.getLocation();
+      final GeneratedAST<?> generatedAST = location.getGeneratedAST();
+      final FullyQualifiedName fqn = generatedAST.getPrimaryClassName();
       final Base base = new Base(suspiciousness.getLocation(),
-          new SwapOperation(chooseNodeAtRandom()));
+          new SwapOperation(chooseNodeAtRandom(fqn)));
       final Gene gene = makeGene(variant.getGene(), base);
       final HistoricalElement element = new MutationHistoricalElement(variant, base);
 
@@ -50,8 +56,9 @@ public class ReorderingMutation extends Mutation {
     return generatedVariants;
   }
 
-  private ASTNode chooseNodeAtRandom() {
-    return candidateSelection.exec();
+  private ASTNode chooseNodeAtRandom(final FullyQualifiedName fqn) {
+    final Scope scope = new Scope(type, fqn);
+    return candidateSelection.exec(scope);
   }
 
   private Gene makeGene(final Gene parent, final Base base) {

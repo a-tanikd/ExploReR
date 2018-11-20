@@ -44,7 +44,7 @@ public class SwapOperationTest {
     final Statement statement1 = (Statement) method.getBody()
         .statements()
         .get(0);
-    final JDTASTLocation location = new JDTASTLocation(sourcePath, statement1);
+    final JDTASTLocation location = new JDTASTLocation(sourcePath, statement1, ast);
 
     // 入れ替えに用いるNodeを生成
     final Statement statement2 = (Statement) method.getBody()
@@ -104,7 +104,7 @@ public class SwapOperationTest {
     final Statement statement1 = (Statement) method.getBody()
         .statements()
         .get(2);
-    final JDTASTLocation location = new JDTASTLocation(sourcePath, statement1);
+    final JDTASTLocation location = new JDTASTLocation(sourcePath, statement1, ast);
 
     // 入れ替えに用いるNodeを生成
     final Statement statement2 = (Statement) method.getBody()
