@@ -17,7 +17,7 @@ import jp.kusumotolab.kgenprog.ga.SinglePointCrossover;
 import jp.kusumotolab.kgenprog.ga.SourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.SourceCodeValidation;
 import jp.kusumotolab.kgenprog.ga.VariantSelection;
-import jp.kusumotolab.kgenprog.project.PatchGenerator;
+import jp.kusumotolab.kgenprog.output.PatchGenerator;
 
 public class CUILauncher {
 
@@ -34,8 +34,8 @@ public class CUILauncher {
     final Random random = new Random(config.getRandomSeed());
     final RouletteStatementSelection rouletteStatementSelection =
         new RouletteStatementSelection(random);
-    final Mutation mutation =
-        new RandomMutation(config.getMutationGeneratingCount(), random, rouletteStatementSelection);
+    final Mutation mutation = new RandomMutation(config.getMutationGeneratingCount(), random,
+        rouletteStatementSelection, config.getScope());
     final Crossover crossover = new SinglePointCrossover(random,
         config.getCrossoverGeneratingCount());
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();

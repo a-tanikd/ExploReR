@@ -21,12 +21,13 @@ import jp.kusumotolab.kgenprog.ga.GenerationalVariantSelection;
 import jp.kusumotolab.kgenprog.ga.Mutation;
 import jp.kusumotolab.kgenprog.ga.RandomMutation;
 import jp.kusumotolab.kgenprog.ga.RouletteStatementSelection;
+import jp.kusumotolab.kgenprog.ga.Scope.Type;
 import jp.kusumotolab.kgenprog.ga.SinglePointCrossover;
 import jp.kusumotolab.kgenprog.ga.SourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.SourceCodeValidation;
 import jp.kusumotolab.kgenprog.ga.Variant;
 import jp.kusumotolab.kgenprog.ga.VariantSelection;
-import jp.kusumotolab.kgenprog.project.PatchGenerator;
+import jp.kusumotolab.kgenprog.output.PatchGenerator;
 
 public class KGenProgMainTest {
 
@@ -63,8 +64,8 @@ public class KGenProgMainTest {
     final FaultLocalization faultLocalization = new Ochiai();
     final Random random = new Random(config.getRandomSeed());
     final CandidateSelection statementSelection = new RouletteStatementSelection(random);
-    final Mutation mutation =
-        new RandomMutation(config.getMutationGeneratingCount(), random, statementSelection);
+    final Mutation mutation = new RandomMutation(config.getMutationGeneratingCount(), random,
+        statementSelection, config.getScope());
     final Crossover crossover =
         new SinglePointCrossover(random, config.getCrossoverGeneratingCount());
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();
@@ -149,7 +150,7 @@ public class KGenProgMainTest {
         .allMatch(Variant::isCompleted);
   }
 
-  @Ignore // TODO まだ修正無理 ref: https://github.com/kusumotolab/kGenProg/issues/341
+  @Ignore // このテスト単体では成功するが，このテストを実行すると続く別のテストが遅くなる．
   @Test
   public void testQuickSort01() {
     final Path rootPath = Paths.get("example/QuickSort01");
@@ -160,8 +161,6 @@ public class KGenProgMainTest {
 
     final KGenProgMain kGenProgMain = createMain(rootPath, productPath, testPath);
     final List<Variant> variants = kGenProgMain.run();
-
-    kGenProgMain.run();
 
     // アサートは適当．現在無限ループにより修正がそもそもできていないので，要検討
     assertThat(variants).hasSize(1)
