@@ -3,14 +3,6 @@ package jp.kusumotolab.kgenprog.fl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.ConditionalExpression;
-import org.eclipse.jdt.core.dom.DoStatement;
-import org.eclipse.jdt.core.dom.EnhancedForStatement;
-import org.eclipse.jdt.core.dom.ForStatement;
-import org.eclipse.jdt.core.dom.IfStatement;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.WhileStatement;
 import jp.kusumotolab.kgenprog.project.ASTLocation;
 import jp.kusumotolab.kgenprog.project.ASTLocations;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
@@ -18,7 +10,7 @@ import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 import jp.kusumotolab.kgenprog.project.test.TestResults;
 
-public class SmellLocalization implements FaultLocalization {
+public abstract class SmellLocalization implements FaultLocalization {
 
   @Override
   public List<Suspiciousness> exec(GeneratedSourceCode generatedSourceCode,
@@ -38,10 +30,9 @@ public class SmellLocalization implements FaultLocalization {
         }
 
         for (ASTLocation location : locations) {
-          final ComplexityVisitor visitor = new ComplexityVisitor();
-          // todo: remove down cast
-          ((JDTASTLocation)location).node.accept(visitor);
-          suspiciousnesses.add(new Suspiciousness(location, visitor.getComplexity()));
+          final JDTASTLocation jdtastLocation = (JDTASTLocation) location;
+          final double smell = calculateSmell(jdtastLocation);
+          suspiciousnesses.add(new Suspiciousness(location, smell));
         }
       }
     }
@@ -51,59 +42,10 @@ public class SmellLocalization implements FaultLocalization {
         .collect(Collectors.toList());
   }
 
+  abstract protected double calculateSmell(JDTASTLocation location);
+
   private int countLines(final String text) {
     final String[] lines = text.split("\r\n|\r|\n");
     return lines.length;
-  }
-
-  static private class ComplexityVisitor extends ASTVisitor {
-
-    private int complexity = 0;
-
-    public int getComplexity() {
-      return complexity;
-    }
-
-    @Override
-    public boolean visit(MethodDeclaration node) {
-      ++complexity;
-      return super.visit(node);
-    }
-
-    @Override
-    public boolean visit(ConditionalExpression node) {
-      ++complexity;
-      return super.visit(node);
-    }
-
-    @Override
-    public boolean visit(EnhancedForStatement node) {
-      ++complexity;
-      return super.visit(node);
-    }
-
-    @Override
-    public boolean visit(ForStatement node) {
-      ++complexity;
-      return super.visit(node);
-    }
-
-    @Override
-    public boolean visit(DoStatement node) {
-      ++complexity;
-      return super.visit(node);
-    }
-
-    @Override
-    public boolean visit(WhileStatement node) {
-      ++complexity;
-      return super.visit(node);
-    }
-
-    @Override
-    public boolean visit(IfStatement node) {
-      ++complexity;
-      return super.visit(node);
-    }
   }
 }

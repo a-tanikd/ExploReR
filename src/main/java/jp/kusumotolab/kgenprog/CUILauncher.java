@@ -4,8 +4,8 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
+import jp.kusumotolab.kgenprog.fl.ComplexityLocalization;
 import jp.kusumotolab.kgenprog.fl.FaultLocalization;
-import jp.kusumotolab.kgenprog.fl.SmellLocalization;
 import jp.kusumotolab.kgenprog.ga.ComplexityValidation;
 import jp.kusumotolab.kgenprog.ga.Crossover;
 import jp.kusumotolab.kgenprog.ga.DefaultSourceCodeGeneration;
@@ -30,7 +30,7 @@ public class CUILauncher {
   public void launch(final Configuration config) {
     setLogLevel(config.getLogLevel());
 
-    final FaultLocalization faultLocalization = new SmellLocalization();
+    final FaultLocalization faultLocalization = new ComplexityLocalization();
     final Random random = new Random(config.getRandomSeed());
     final RouletteStatementSelection rouletteStatementSelection =
         new RouletteStatementSelection(random);
