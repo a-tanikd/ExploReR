@@ -17,6 +17,8 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
+import com.google.common.collect.ImmutableList;
+import jp.kusumotolab.kgenprog.project.ClassPath;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.GenerationFailedSourceCode;
@@ -28,16 +30,28 @@ import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 public class JDTASTConstruction {
 
   public GeneratedSourceCode constructAST(final TargetProject project) {
-    return constructAST(project.getProductSourcePaths(), project.getTestSourcePaths());
+    return constructAST(false, project);
+  }
+
+  public GeneratedSourceCode constructAST(boolean needBinding, final TargetProject project) {
+    return constructAST(needBinding, project.getProductSourcePaths(), project.getTestSourcePaths(),
+        project.getClassPaths());
   }
 
   public GeneratedSourceCode constructAST(final List<ProductSourcePath> productSourcePaths,
       final List<TestSourcePath> testSourcePaths) {
+
+    return constructAST(false, productSourcePaths, testSourcePaths, null);
+  }
+
+  public GeneratedSourceCode constructAST(boolean needBinding,
+      final List<ProductSourcePath> productSourcePaths,
+      final List<TestSourcePath> testSourcePaths, List<ClassPath> classPaths) {
     final String[] paths = Stream.concat(productSourcePaths.stream(), testSourcePaths.stream())
         .map(path -> path.path.toString())
         .toArray(String[]::new);
 
-    final ASTParser parser = createNewParser();
+    final ASTParser parser = createNewParser(needBinding, productSourcePaths, classPaths);
 
     final Map<Path, ProductSourcePath> pathToProductSourcePath = productSourcePaths.stream()
         .collect(Collectors.toMap(path -> path.path, path -> path));
@@ -80,26 +94,52 @@ public class JDTASTConstruction {
 
   public <T extends SourcePath> GeneratedJDTAST<T> constructAST(final T sourcePath,
       final String data) {
-    final ASTParser parser = createNewParser();
+    // todo: needBinding を Config に吸い上げる
+    final ASTParser parser = createNewParser(true, ImmutableList.of(sourcePath), null);
     parser.setSource(data.toCharArray());
 
     return new GeneratedJDTAST<>(this, sourcePath, (CompilationUnit) parser.createAST(null), data);
   }
 
   public static ASTParser createNewParser() {
+    return createNewParser(false, null, null);
+  }
+
+  public static <T extends SourcePath> ASTParser createNewParser(boolean needBinding,
+      List<T> sourcePaths, List<ClassPath> classPaths) {
     final ASTParser parser = ASTParser.newParser(AST.JLS10);
 
-    @SuppressWarnings("unchecked")
-    final Map<String, String> options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
+    @SuppressWarnings("unchecked") final Map<String, String> options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
     options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
     options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
     options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
     parser.setCompilerOptions(options);
 
     // TODO: Bindingが必要か検討
-    parser.setResolveBindings(false);
-    parser.setBindingsRecovery(false);
-    parser.setEnvironment(null, null, null, true);
+    parser.setResolveBindings(needBinding);
+    parser.setBindingsRecovery(needBinding);
+
+    final String[] classPathsEntries =
+        classPaths == null ? null : classPaths.stream()
+            .map(classPath -> classPath.path.toString())
+            .toArray(String[]::new);
+    final String[] sourcePathEntries =
+        sourcePaths == null ? null : sourcePaths.stream()
+            .map(sourcePath -> sourcePath.path)
+            .map(path -> {
+              if (Files.isDirectory(path)) {
+                return path.toString();
+              }
+              if (path.getParent() == null) {
+                return Paths.get("")
+                    .toString();
+              }
+              return path.getParent()
+                  .toString();
+            })
+            .toArray(String[]::new);
+    parser.setEnvironment(classPathsEntries, sourcePathEntries, null, true);
+//    parser.setEnvironment(null, null, null, true);
 
     return parser;
   }

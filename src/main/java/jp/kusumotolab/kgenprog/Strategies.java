@@ -58,7 +58,8 @@ public class Strategies {
   }
 
   public GeneratedSourceCode execASTConstruction(final TargetProject targetProject) {
-    return astConstruction.constructAST(targetProject);
+    // todo: needBinding を Config に吸い上げる
+    return astConstruction.constructAST(true, targetProject);
   }
 
   public List<Variant> execVariantSelection(final List<Variant> current,
