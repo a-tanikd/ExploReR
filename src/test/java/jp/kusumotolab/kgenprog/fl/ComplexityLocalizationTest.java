@@ -11,7 +11,7 @@ import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
 import jp.kusumotolab.kgenprog.testutil.TestUtil;
 
-public class SmellLocalizationTest {
+public class ComplexityLocalizationTest {
 
   @Test
   public void testForExample01() {
@@ -20,7 +20,7 @@ public class SmellLocalizationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final FaultLocalization fl = new SmellLocalization();
+    final FaultLocalization fl = new ComplexityLocalization();
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
@@ -35,7 +35,7 @@ public class SmellLocalizationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final FaultLocalization fl = new SmellLocalization();
+    final FaultLocalization fl = new ComplexityLocalization();
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
@@ -50,7 +50,7 @@ public class SmellLocalizationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final FaultLocalization fl = new SmellLocalization();
+    final FaultLocalization fl = new ComplexityLocalization();
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 

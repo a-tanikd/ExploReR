@@ -1,4 +1,4 @@
-package jp.kusumotolab.kgenprog.ga;
+package jp.kusumotolab.kgenprog.analysis;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ConditionalExpression;

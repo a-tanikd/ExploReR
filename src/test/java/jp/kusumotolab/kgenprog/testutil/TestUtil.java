@@ -36,7 +36,8 @@ public class TestUtil {
 
   public static Variant createVariant(final Configuration config) {
     final Gene gene = new Gene(Collections.emptyList());
-    final GeneratedSourceCode sourceCode = createGeneratedSourceCode(config.getTargetProject());
+    // todo: needBinding
+    final GeneratedSourceCode sourceCode = createGeneratedSourceCode(true, config.getTargetProject());
     final TestResults testResults = new TestExecutor(config).exec(sourceCode);
     final Fitness fitness = new DefaultCodeValidation().exec(null, testResults);
     final List<Suspiciousness> suspiciousnesses = new Ochiai().exec(sourceCode, testResults);
@@ -45,7 +46,13 @@ public class TestUtil {
   }
 
   public static GeneratedSourceCode createGeneratedSourceCode(final TargetProject project) {
-    final GeneratedSourceCode sourceCode = new JDTASTConstruction().constructAST(project);
+    return createGeneratedSourceCode(false, project);
+  }
+
+  public static GeneratedSourceCode createGeneratedSourceCode(final boolean needBinding,
+      final TargetProject project) {
+    final GeneratedSourceCode sourceCode = new JDTASTConstruction().constructAST(needBinding,
+        project);
     return sourceCode;
   }
 

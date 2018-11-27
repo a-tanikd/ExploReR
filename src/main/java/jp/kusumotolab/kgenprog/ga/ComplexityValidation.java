@@ -2,6 +2,7 @@ package jp.kusumotolab.kgenprog.ga;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jp.kusumotolab.kgenprog.analysis.ComplexityVisitor;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.ProductSourcePath;
