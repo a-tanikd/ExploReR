@@ -29,7 +29,9 @@ public abstract class SmellLocalization implements FaultLocalization {
           continue;
         }
 
-        for (ASTLocation location : locations) {
+        final List<ASTLocation> filteredLocations = filterLocations(locations);
+
+        for (ASTLocation location : filteredLocations) {
           final JDTASTLocation jdtastLocation = (JDTASTLocation) location;
           final double smell = calculateSmell(jdtastLocation);
           suspiciousnesses.add(new Suspiciousness(location, smell));
@@ -40,6 +42,11 @@ public abstract class SmellLocalization implements FaultLocalization {
     return suspiciousnesses.stream()
         .distinct()
         .collect(Collectors.toList());
+  }
+
+  protected List<ASTLocation> filterLocations(final List<ASTLocation> locations) {
+    // By default, do nothing
+    return locations;
   }
 
   abstract protected double calculateSmell(JDTASTLocation location);
