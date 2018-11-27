@@ -21,7 +21,6 @@ import jp.kusumotolab.kgenprog.ga.GenerationalVariantSelection;
 import jp.kusumotolab.kgenprog.ga.Mutation;
 import jp.kusumotolab.kgenprog.ga.RandomMutation;
 import jp.kusumotolab.kgenprog.ga.RouletteStatementSelection;
-import jp.kusumotolab.kgenprog.ga.Scope.Type;
 import jp.kusumotolab.kgenprog.ga.SinglePointCrossover;
 import jp.kusumotolab.kgenprog.ga.SourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.SourceCodeValidation;
@@ -133,7 +132,7 @@ public class KGenProgMainTest {
         .allMatch(Variant::isCompleted);
   }
 
-  // @Ignore
+  @Ignore
   @Test
   public void testGCD01() {
     final Path rootPath = Paths.get("example/GCD01");

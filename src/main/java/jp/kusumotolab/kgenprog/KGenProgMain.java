@@ -107,7 +107,7 @@ public class KGenProgMain {
       // 次世代に向けての準備
       variantStore.proceedNextGeneration();
 
-      logGenerationSummary(stopwatch.toString(), variantsByMutation, variantsByCrossover);
+//      logGenerationSummary(stopwatch.toString(), variantsByMutation, variantsByCrossover);
     }
 
     // 生成されたバリアントのパッチ出力
