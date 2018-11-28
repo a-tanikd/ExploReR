@@ -35,7 +35,7 @@ public class CUILauncher {
     final RouletteStatementSelection rouletteStatementSelection =
         new RouletteStatementSelection(random);
     final Mutation mutation = new ReorderingMutation(config.getMutationGeneratingCount(), random,
-        rouletteStatementSelection, config.getScope());
+        rouletteStatementSelection);
     final Crossover crossover = new SinglePointCrossover(random,
         config.getCrossoverGeneratingCount());
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();

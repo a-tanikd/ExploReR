@@ -5,17 +5,19 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Statement;
 import jp.kusumotolab.kgenprog.fl.Suspiciousness;
-import jp.kusumotolab.kgenprog.project.ASTLocation;
+import jp.kusumotolab.kgenprog.ga.Scope.Type;
 import jp.kusumotolab.kgenprog.project.FullyQualifiedName;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
+import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 import jp.kusumotolab.kgenprog.project.jdt.SwapOperation;
 
 public class ReorderingMutation extends Mutation {
 
   public ReorderingMutation(final int mutationGeneratingCount, final Random random,
-      final CandidateSelection candidateSelection, Scope.Type type) {
-    super(mutationGeneratingCount, random, candidateSelection, type);
+      final CandidateSelection candidateSelection) {
+    super(mutationGeneratingCount, random, candidateSelection, Type.METHOD);
   }
 
   @Override
@@ -38,15 +40,15 @@ public class ReorderingMutation extends Mutation {
         continue;
       }
 
+      setCandidates(variant.getGeneratedSourceCode()
+          .getProductAsts());
+
       final Function<Suspiciousness, Double> weightFunction = susp -> Math.pow(susp.getValue(), 2);
       final Roulette<Suspiciousness> suspiciousnessRoulette =
           new Roulette<>(suspiciousnesses, weightFunction, random);
+
       final Suspiciousness suspiciousness = suspiciousnessRoulette.exec();
-      final ASTLocation location = suspiciousness.getLocation();
-      final GeneratedAST<?> generatedAST = location.getGeneratedAST();
-      final FullyQualifiedName fqn = generatedAST.getPrimaryClassName();
-      final Base base = new Base(suspiciousness.getLocation(),
-          new SwapOperation(chooseNodeAtRandom(fqn)));
+      final Base base = makeBase(suspiciousness);
       final Gene gene = makeGene(variant.getGene(), base);
       final HistoricalElement element = new MutationHistoricalElement(variant, base);
 
@@ -56,8 +58,20 @@ public class ReorderingMutation extends Mutation {
     return generatedVariants;
   }
 
-  private ASTNode chooseNodeAtRandom(final FullyQualifiedName fqn) {
-    final Scope scope = new Scope(type, fqn);
+  private Base makeBase(Suspiciousness suspiciousness) {
+    final JDTASTLocation location = (JDTASTLocation)suspiciousness.getLocation();
+    final SwapOperation operation = new SwapOperation(chooseNodeAtRandom(location));
+
+    return new Base(location, operation);
+  }
+
+  private ASTNode chooseNodeAtRandom(final JDTASTLocation location) {
+    final GeneratedAST<?> generatedAST = location.getGeneratedAST();
+    final FullyQualifiedName fqn = generatedAST.getPrimaryClassName();
+    final Statement statement = (Statement)location.node;
+    final MethodName methodName = new MethodName(fqn, statement);
+    final Scope scope = new Scope(type, methodName);
+
     return candidateSelection.exec(scope);
   }
 

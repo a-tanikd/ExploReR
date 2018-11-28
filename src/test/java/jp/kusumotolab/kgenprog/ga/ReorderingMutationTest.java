@@ -20,7 +20,6 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.Test;
 import jp.kusumotolab.kgenprog.fl.Suspiciousness;
-import jp.kusumotolab.kgenprog.ga.Scope.Type;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.Operation;
@@ -179,7 +178,7 @@ public class ReorderingMutationTest {
       final Random random) {
     final CandidateSelection statementSelection = new RouletteStatementSelection(random);
     final ReorderingMutation mutation =
-        new ReorderingMutation(mutationGeneratingCount, random, statementSelection, Type.PROJECT);
+        new ReorderingMutation(mutationGeneratingCount, random, statementSelection);
     mutation.setCandidates(sourceCode.getProductAsts());
     return mutation;
   }
@@ -216,7 +215,7 @@ public class ReorderingMutationTest {
     }
 
     final Gene initialGene = new Gene(Collections.emptyList());
-    return new Variant(0, initialGene, sourceCode, null, new SimpleFitness(0.0), suspiciousnesses,
+    return new Variant(0, 0, initialGene, sourceCode, null, new SimpleFitness(0.0), suspiciousnesses,
         null);
   }
 
@@ -224,7 +223,7 @@ public class ReorderingMutationTest {
     final VariantStore variantStore = mock(VariantStore.class);
     when(variantStore.getCurrentVariants()).thenReturn(Collections.singletonList(initialVariant));
     when(variantStore.createVariant(any(), any())).then(ans -> {
-      return new Variant(0, ans.getArgument(0), null, null, null, null, ans.getArgument(1));
+      return new Variant(0, 0, ans.getArgument(0), null, null, null, null, ans.getArgument(1));
     });
     return variantStore;
   }
