@@ -8,6 +8,7 @@ import java.util.Random;
 import org.eclipse.jdt.core.dom.Statement;
 import org.junit.Test;
 import jp.kusumotolab.kgenprog.ga.Scope.Type;
+import jp.kusumotolab.kgenprog.project.FullyQualifiedName;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.ProductSourcePath;
@@ -22,7 +23,7 @@ public class RouletteStatementSelectionTest {
   public void testProjectScope() {
     final StatementSelection statementSelection = createStatementSelection();
     final Roulette<ReuseCandidate<Statement>> roulette = statementSelection.getRoulette(
-        new Scope(Type.PROJECT, null));
+        new Scope(Type.PROJECT, (FullyQualifiedName) null));
     assertThat(roulette.getCandidateList()).hasSize(3);
   }
 
@@ -42,8 +43,21 @@ public class RouletteStatementSelectionTest {
     assertThat(roulette.getCandidateList()).hasSize(1);
   }
 
+  @Test
+  public void testMethodScope() {
+    final StatementSelection statementSelection = createStatementSelection("example/refactoring/GeometricMean");
+    final TargetFullyQualifiedName fqn = new TargetFullyQualifiedName("example.GeometricMean");
+    final Roulette<ReuseCandidate<Statement>> roulette = statementSelection.getRoulette(
+        new Scope(Type.METHOD, fqn, "geometricMean"));
+    assertThat(roulette.getCandidateList()).hasSize(4);
+  }
+
   private StatementSelection createStatementSelection() {
-    final Path basePath = Paths.get("example/BuildSuccess15");
+    return createStatementSelection("example/BuildSuccess15");
+  }
+
+  private StatementSelection createStatementSelection(final String projectRoot) {
+    final Path basePath = Paths.get(projectRoot);
     final TargetProject targetProject = TargetProjectFactory.create(basePath);
     final GeneratedSourceCode sourceCode= TestUtil.createGeneratedSourceCode(
         targetProject);

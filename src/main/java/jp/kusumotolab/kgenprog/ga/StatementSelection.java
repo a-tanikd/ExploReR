@@ -20,8 +20,10 @@ public abstract class StatementSelection implements CandidateSelection {
   private Roulette<ReuseCandidate<Statement>> projectRoulette;
   private final Multimap<String, ReuseCandidate<Statement>> packageNameStatementMultimap = ArrayListMultimap.create();
   private final Multimap<FullyQualifiedName, ReuseCandidate<Statement>> fqnStatementMultiMap = ArrayListMultimap.create();
+  private final Multimap<MethodName, ReuseCandidate<Statement>> methodNameStatementMultimap = ArrayListMultimap.create();
   private final Map<String, Roulette<ReuseCandidate<Statement>>> packageNameRouletteMap = new HashMap<>();
   private final Map<FullyQualifiedName, Roulette<ReuseCandidate<Statement>>> fqnRouletteMap = new HashMap<>();
+  private final Map<MethodName, Roulette<ReuseCandidate<Statement>>> methodNameRouletteMap = new HashMap<>();
 
   public StatementSelection(final Random random) {
     this.random = random;
@@ -50,6 +52,7 @@ public abstract class StatementSelection implements CandidateSelection {
     for (final ReuseCandidate<Statement> reuseCandidate : reuseCandidates) {
       packageNameStatementMultimap.put(reuseCandidate.getPackageName(), reuseCandidate);
       fqnStatementMultiMap.put(reuseCandidate.getFqn(), reuseCandidate);
+      methodNameStatementMultimap.put(new MethodName(reuseCandidate), reuseCandidate);
     }
   }
 
@@ -63,6 +66,10 @@ public abstract class StatementSelection implements CandidateSelection {
 
   private Roulette<ReuseCandidate<Statement>> getRouletteInFile(final FullyQualifiedName fqn) {
     return getRoulette(fqn, fqnRouletteMap, fqnStatementMultiMap);
+  }
+
+  private Roulette<ReuseCandidate<Statement>> getRouletteInMethod(final MethodName methodName) {
+    return getRoulette(methodName, methodNameRouletteMap, methodNameStatementMultimap);
   }
 
   private <T> Roulette<ReuseCandidate<Statement>> getRoulette(final T key,
@@ -87,6 +94,8 @@ public abstract class StatementSelection implements CandidateSelection {
         return getRouletteInPackage(fqn.getPackageName());
       case FILE:
         return getRouletteInFile(fqn);
+      case METHOD:
+        return getRouletteInMethod(scope.getMethodName());
     }
     throw new IllegalArgumentException("This scope is not implemented.");
   }
