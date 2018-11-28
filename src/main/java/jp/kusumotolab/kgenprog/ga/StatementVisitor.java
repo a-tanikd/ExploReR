@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ContinueStatement;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EmptyStatement;
+import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -78,6 +79,12 @@ public class StatementVisitor extends ASTVisitor {
 
   @Override
   public boolean visit(EmptyStatement node) {
+    addStatement(node);
+    return super.visit(node);
+  }
+
+  @Override
+  public boolean visit(EnhancedForStatement node) {
     addStatement(node);
     return super.visit(node);
   }
