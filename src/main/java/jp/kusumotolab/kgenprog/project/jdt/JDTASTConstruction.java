@@ -97,8 +97,10 @@ public class JDTASTConstruction {
     // todo: needBinding を Config に吸い上げる
     final ASTParser parser = createNewParser(true, ImmutableList.of(sourcePath), null);
     parser.setSource(data.toCharArray());
+    parser.setUnitName(sourcePath.toString());
+    final CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 
-    return new GeneratedJDTAST<>(this, sourcePath, (CompilationUnit) parser.createAST(null), data);
+    return new GeneratedJDTAST<>(this, sourcePath, compilationUnit, data);
   }
 
   public static ASTParser createNewParser() {
@@ -116,6 +118,7 @@ public class JDTASTConstruction {
     parser.setCompilerOptions(options);
 
     // TODO: Bindingが必要か検討
+    parser.setKind(ASTParser.K_COMPILATION_UNIT);
     parser.setResolveBindings(needBinding);
     parser.setBindingsRecovery(needBinding);
 
