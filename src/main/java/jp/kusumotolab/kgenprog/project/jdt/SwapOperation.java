@@ -22,13 +22,9 @@ public class SwapOperation extends JDTOperation {
     final ListRewrite listRewrite = astRewrite.getListRewrite(target.getParent(),
         (ChildListPropertyDescriptor) target.getLocationInParent());
 
-    int index1 = listRewrite.getOriginalList()
-        .indexOf(target);
-    int index2 = listRewrite.getOriginalList()
-        .indexOf(astNode);
-    listRewrite.remove(astNode, null);
+    final ASTNode copiedTarget = astRewrite.createCopyTarget(target);
+    final ASTNode moveTarget = listRewrite.createMoveTarget(astNode, astNode, copiedTarget, null);
+    listRewrite.insertAfter(moveTarget, target, null);
     listRewrite.remove(target, null);
-    listRewrite.insertAt(astNode, index1, null);
-    listRewrite.insertAt(target, index2 + 1, null);
   }
 }
