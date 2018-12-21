@@ -85,7 +85,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "34:c6:33:a2:0a:e1:13:74:4b:03:1c:3e:33:e3:3f:e0"
+            - "81:dc:9e:90:1d:62:9a:19:fa:66:83:6f:6e:67:c3:e3"
       - run:
           name: Set up git command
           command: |
@@ -154,12 +154,12 @@ workflows:
 
   # Workflow: test-branches
   #   Execute the unit tests on every branch except for master on the GitHub.
-  test-branches:
-    jobs:
-      - run-unit-tests:
-          filters:
-            branches:
-              ignore: master
+  # test-branches:
+  #   jobs:
+  #     - run-unit-tests:
+  #         filters:
+  #           branches:
+  #             ignore: master
 
   # Workflow: build-and-release
   #   Execute testing, building and publishing on master branch.
