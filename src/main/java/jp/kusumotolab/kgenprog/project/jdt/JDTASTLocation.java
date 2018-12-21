@@ -18,7 +18,7 @@ import jp.kusumotolab.kgenprog.project.SourcePath;
  * @author r-arima
  * @see jp.kusumotolab.kgenprog.JDTOperaion
  */
-final public class JDTASTLocation implements ASTLocation {
+public class JDTASTLocation implements ASTLocation {
 
   public final ASTNode node;
 
@@ -135,5 +135,9 @@ final public class JDTASTLocation implements ASTLocation {
   @Override
   public int hashCode() {
     return Objects.hash(node, getSourcePath());
+  }
+
+  public ASTNode getNode() {
+    return node;
   }
 }

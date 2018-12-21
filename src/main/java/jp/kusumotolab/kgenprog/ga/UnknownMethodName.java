@@ -1,5 +1,6 @@
 package jp.kusumotolab.kgenprog.ga;
 
+import jp.kusumotolab.kgenprog.ga.mutation.MethodName;
 import jp.kusumotolab.kgenprog.project.FullyQualifiedName;
 
 public class UnknownMethodName extends MethodName {

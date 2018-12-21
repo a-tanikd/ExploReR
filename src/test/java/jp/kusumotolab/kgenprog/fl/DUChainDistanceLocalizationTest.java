@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.junit.Test;
 import jp.kusumotolab.kgenprog.Configuration;
-import jp.kusumotolab.kgenprog.ga.Variant;
+import jp.kusumotolab.kgenprog.ga.variant.Variant;
 import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
 import jp.kusumotolab.kgenprog.testutil.TestUtil;

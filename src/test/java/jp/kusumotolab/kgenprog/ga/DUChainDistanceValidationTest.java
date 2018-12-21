@@ -1,11 +1,14 @@
 package jp.kusumotolab.kgenprog.ga;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.Assertions.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Test;
 import jp.kusumotolab.kgenprog.Configuration;
+import jp.kusumotolab.kgenprog.ga.validation.DUChainDistanceValidation;
+import jp.kusumotolab.kgenprog.ga.validation.Fitness;
+import jp.kusumotolab.kgenprog.ga.validation.MetricValidation;
+import jp.kusumotolab.kgenprog.ga.variant.Variant;
 import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
 import jp.kusumotolab.kgenprog.testutil.TestUtil;
