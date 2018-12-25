@@ -35,4 +35,9 @@ public class MetricFitness implements Fitness {
   public boolean isMaximum() {
     return testSuccessRate == 1.0 && metric < INITIAL_METRIC;
   }
+
+  @Override
+  public int compareTo(Fitness anotherFitness) {
+    return Double.compare(getValue(), anotherFitness.getValue());
+  }
 }
