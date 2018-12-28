@@ -1,6 +1,8 @@
 package jp.kusumotolab.kgenprog.testutil;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +40,9 @@ public class TestUtil {
     final Gene gene = new Gene(Collections.emptyList());
     // todo: needBinding
     final GeneratedSourceCode sourceCode = createGeneratedSourceCode(true, config.getTargetProject());
-    final TestResults testResults = new LocalTestExecutor(config).exec(sourceCode);
+    final Variant variant = mock(Variant.class);
+    when(variant.getGeneratedSourceCode()).thenReturn(sourceCode);
+    final TestResults testResults = new LocalTestExecutor(config).exec(variant);
     final Fitness fitness = new DefaultCodeValidation().exec(null, testResults);
     final List<Suspiciousness> suspiciousnesses = new Ochiai().exec(sourceCode, testResults);
     final HistoricalElement element = new OriginalHistoricalElement();

@@ -86,7 +86,7 @@ dependencies {
   // https://mvnrepository.com/artifact/fr.inria.gforge.spoon/spoon-core
   compile group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '7.0.0'
 
-  implementation "io.reactivex.rxjava2:rxjava:2.2.4"
+  compile "io.reactivex.rxjava2:rxjava:2.2.4"
 }
 
 jar {

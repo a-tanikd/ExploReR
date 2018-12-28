@@ -60,14 +60,16 @@ public class KGenProgMain {
 
     logConfig();
 
+    testExecutor.initialize();
+
     final Strategies strategies = new Strategies(faultLocalization, astConstruction,
         sourceCodeGeneration, sourceCodeValidation, testExecutor, variantSelection);
     final VariantStore variantStore = new VariantStore(config, strategies);
     final Variant initialVariant = variantStore.getInitialVariant();
 
-    sourceCodeGeneration.initialize(initialVariant);
     mutation.setCandidates(initialVariant.getGeneratedSourceCode()
         .getProductAsts());
+    sourceCodeGeneration.initialize(initialVariant);
 
     MetricFitness.init(initialVariant.getGeneratedSourceCode(), sourceCodeValidation);
 
@@ -121,6 +123,7 @@ public class KGenProgMain {
     writeJson(variantStore);
 
     stopwatch.unsplit();
+    strategies.finish();
     log.info("execution time: " + stopwatch.toString());
 
 
