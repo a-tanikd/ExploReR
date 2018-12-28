@@ -129,7 +129,7 @@ public class JDTASTConstruction {
             .toArray(String[]::new);
     final String[] sourcePathEntries =
         sourcePaths == null ? null : sourcePaths.stream()
-            .map(sourcePath -> sourcePath.path)
+            .map(SourcePath::getResolvedPath)
             .map(path -> {
               if (Files.isDirectory(path)) {
                 return path.toString();

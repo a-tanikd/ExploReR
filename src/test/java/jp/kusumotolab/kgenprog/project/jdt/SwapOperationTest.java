@@ -27,7 +27,7 @@ public class SwapOperationTest {
         + "  }"
         + "}";
 
-    final ProductSourcePath sourcePath = new ProductSourcePath(Paths.get("A.java"));
+    final ProductSourcePath sourcePath = new ProductSourcePath(Paths.get("."), Paths.get("A.java"));
 
     final JDTASTConstruction constructor = new JDTASTConstruction();
     final GeneratedJDTAST<ProductSourcePath> ast = constructor.constructAST(sourcePath, source);
@@ -87,7 +87,7 @@ public class SwapOperationTest {
         + "  }"
         + "}";
 
-    final ProductSourcePath sourcePath = new ProductSourcePath(Paths.get("A.java"));
+    final ProductSourcePath sourcePath = new ProductSourcePath(Paths.get("."), Paths.get("A.java"));
 
     final JDTASTConstruction constructor = new JDTASTConstruction();
     final GeneratedJDTAST<ProductSourcePath> ast = constructor.constructAST(sourcePath, source);
