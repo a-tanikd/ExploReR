@@ -122,13 +122,14 @@ public class VariantStoreTest {
     assertThat(variantStore.getFoundSolutionsNumber()).hasValue(3);
     assertThat(variantStore.getFoundSolutions()).containsExactly(success1, success2, success3);
 
-    // テスト成功Variantが含まれていないか確認
-    assertThat(variantStore.getGeneratedVariants()).containsExactly(fail1, fail2, fail3);
+    assertThat(variantStore.getGeneratedVariants()).containsExactlyInAnyOrder(success1, success2,
+        success3, fail1, fail2, fail3);
 
     variantStore.proceedNextGeneration();
 
     // 世代交代が行われたか確認
-    assertThat(variantStore.getCurrentVariants()).containsExactly(fail1, fail2, fail3);
+    assertThat(variantStore.getCurrentVariants()).containsExactlyInAnyOrder(success1, success2,
+        success3, fail1, fail2, fail3);
   }
 
   @Test
@@ -177,7 +178,8 @@ public class VariantStoreTest {
     final JDTASTConstruction jdtastConstruction = new JDTASTConstruction();
     final Strategies strategies = mock(Strategies.class);
 
-    when(strategies.execASTConstruction(any())).then(v -> jdtastConstruction.constructAST(config.getTargetProject()));
+    when(strategies.execASTConstruction(any())).then(
+        v -> jdtastConstruction.constructAST(config.getTargetProject()));
     when(strategies.execVariantSelection(any(), any())).then(v -> v.getArgument(1));
     when(strategies.execTestExecutor(any())).then(v -> EmptyTestResults.instance);
     when(strategies.execSourceCodeValidation(any(), any())).then(v -> new SimpleFitness(1.0d));
