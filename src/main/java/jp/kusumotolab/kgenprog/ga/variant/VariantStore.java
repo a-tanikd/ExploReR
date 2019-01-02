@@ -131,9 +131,8 @@ public class VariantStore {
     allVariants.add(variant);
     if (variant.isCompleted()) {
       foundSolutions.add(variant);
-    } else {
-      generatedVariants.add(variant);
     }
+      generatedVariants.add(variant);
   }
 
   /**
