@@ -6,16 +6,16 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import jp.kusumotolab.kgenprog.fl.DUChainDistanceLocalization;
 import jp.kusumotolab.kgenprog.fl.FaultLocalization;
-import jp.kusumotolab.kgenprog.ga.validation.DUChainDistanceValidation;
-import jp.kusumotolab.kgenprog.ga.mutation.ReorderingMutation;
 import jp.kusumotolab.kgenprog.ga.codegeneration.DefaultSourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.codegeneration.SourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.crossover.Crossover;
 import jp.kusumotolab.kgenprog.ga.crossover.SinglePointCrossover;
 import jp.kusumotolab.kgenprog.ga.mutation.Mutation;
+import jp.kusumotolab.kgenprog.ga.mutation.ReorderingMutation;
 import jp.kusumotolab.kgenprog.ga.mutation.selection.RouletteStatementSelection;
-import jp.kusumotolab.kgenprog.ga.selection.DefaultVariantSelection;
+import jp.kusumotolab.kgenprog.ga.selection.AscendingVariantSelection;
 import jp.kusumotolab.kgenprog.ga.selection.VariantSelection;
+import jp.kusumotolab.kgenprog.ga.validation.DUChainDistanceValidation;
 import jp.kusumotolab.kgenprog.ga.validation.SourceCodeValidation;
 import jp.kusumotolab.kgenprog.output.PatchGenerator;
 import jp.kusumotolab.kgenprog.project.test.LocalTestExecutor;
@@ -47,7 +47,7 @@ public class CUILauncher {
         config.getCrossoverGeneratingCount());
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();
     final SourceCodeValidation sourceCodeValidation = new DUChainDistanceValidation();
-    final VariantSelection variantSelection = new DefaultVariantSelection(config.getHeadcount());
+    final VariantSelection variantSelection = new AscendingVariantSelection(config.getHeadcount());
     final TestExecutor testExecutor = new LocalTestExecutor(config);
     final PatchGenerator patchGenerator = new PatchGenerator();
 
