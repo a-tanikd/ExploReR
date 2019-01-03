@@ -29,6 +29,7 @@ public class CUILauncher {
       final CUILauncher launcher = new CUILauncher();
       launcher.launch(config);
     } catch (IllegalArgumentException e) {
+      e.printStackTrace(System.err);
       System.exit(1);
     }
   }
