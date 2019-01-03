@@ -8,7 +8,7 @@ public abstract class MetricValidation implements SourceCodeValidation {
   @Override
   public Fitness exec(GeneratedSourceCode sourceCode, TestResults testResults) {
     if (!sourceCode.isGenerationSuccess()) {
-      return new SimpleFitness(testResults.getSuccessRate());
+      return new MetricFitness(Double.NaN, testResults.getSuccessRate());
     }
     final double fitness = calculateFitness(sourceCode);
 
