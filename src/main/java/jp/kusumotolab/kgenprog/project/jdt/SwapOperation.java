@@ -18,13 +18,19 @@ public class SwapOperation extends JDTOperation {
   protected <T extends SourcePath> void applyToASTRewrite(final GeneratedJDTAST<T> ast,
       final JDTASTLocation location, final ASTRewrite astRewrite) {
 
-    final ASTNode target = location.locate(ast.getRoot());
-    final ListRewrite listRewrite = astRewrite.getListRewrite(target.getParent(),
-        (ChildListPropertyDescriptor) target.getLocationInParent());
+    // astNode の Location 作成
+    final JDTASTLocation location2 = new JDTASTLocation(location.getSourcePath(), astNode, null);
 
-    final ASTNode copiedTarget = astRewrite.createCopyTarget(target);
-    final ASTNode moveTarget = listRewrite.createMoveTarget(astNode, astNode, copiedTarget, null);
-    listRewrite.insertAfter(moveTarget, target, null);
-    listRewrite.remove(target, null);
+    final ASTNode target1 = location.locate(ast.getRoot());
+    final ASTNode target2 = location2.locate(ast.getRoot());
+
+    final ASTNode copiedTarget1 = astRewrite.createCopyTarget(target1);
+    final ASTNode copiedTarget2 = astRewrite.createCopyTarget(target2);
+
+    final ListRewrite listRewrite = astRewrite.getListRewrite(target1.getParent(),
+        (ChildListPropertyDescriptor) target1.getLocationInParent());
+
+    astRewrite.replace(target1, copiedTarget2, null);
+    astRewrite.replace(target2, copiedTarget1, null);
   }
 }
