@@ -13,7 +13,7 @@ import jp.kusumotolab.kgenprog.ga.crossover.SinglePointCrossover;
 import jp.kusumotolab.kgenprog.ga.mutation.Mutation;
 import jp.kusumotolab.kgenprog.ga.mutation.ReorderingMutation;
 import jp.kusumotolab.kgenprog.ga.mutation.selection.RouletteStatementSelection;
-import jp.kusumotolab.kgenprog.ga.selection.AscendingVariantSelection;
+import jp.kusumotolab.kgenprog.ga.selection.MetricVariantSelection;
 import jp.kusumotolab.kgenprog.ga.selection.VariantSelection;
 import jp.kusumotolab.kgenprog.ga.validation.DUChainDistanceValidation;
 import jp.kusumotolab.kgenprog.ga.validation.SourceCodeValidation;
@@ -47,7 +47,7 @@ public class CUILauncher {
         config.getCrossoverGeneratingCount());
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();
     final SourceCodeValidation sourceCodeValidation = new DUChainDistanceValidation();
-    final VariantSelection variantSelection = new AscendingVariantSelection(config.getHeadcount());
+    final VariantSelection variantSelection = new MetricVariantSelection(config.getHeadcount());
     final TestExecutor testExecutor = new LocalTestExecutor(config);
     final PatchGenerator patchGenerator = new PatchGenerator();
 
