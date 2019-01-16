@@ -18,8 +18,7 @@ public abstract class SmellLocalization implements FaultLocalization {
     final List<Suspiciousness> suspiciousnesses = new ArrayList<>();
 
     for (final GeneratedAST ast : generatedSourceCode.getProductAsts()) {
-      final String code = ast.getSourceCode();
-      final int lastLineNumber = countLines(code);
+      final int lastLineNumber = ast.getNumberOfLines();
       final ASTLocations astLocations = ast.createLocations();
 
       for (int line = 1; line <= lastLineNumber; ++line) {
@@ -50,9 +49,4 @@ public abstract class SmellLocalization implements FaultLocalization {
   }
 
   abstract protected double calculateSmell(JDTASTLocation location);
-
-  private int countLines(final String text) {
-    final String[] lines = text.split("\r\n|\r|\n");
-    return lines.length;
-  }
 }
