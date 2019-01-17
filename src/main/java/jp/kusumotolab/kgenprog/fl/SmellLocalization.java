@@ -7,10 +7,17 @@ import jp.kusumotolab.kgenprog.project.ASTLocation;
 import jp.kusumotolab.kgenprog.project.ASTLocations;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
+import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedName;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 import jp.kusumotolab.kgenprog.project.test.TestResults;
 
 public abstract class SmellLocalization implements FaultLocalization {
+
+  protected final TargetFullyQualifiedName refactoredClass;
+
+  public SmellLocalization(final TargetFullyQualifiedName refactoredClass) {
+    this.refactoredClass = refactoredClass;
+  }
 
   @Override
   public List<Suspiciousness> exec(GeneratedSourceCode generatedSourceCode,
@@ -18,6 +25,11 @@ public abstract class SmellLocalization implements FaultLocalization {
     final List<Suspiciousness> suspiciousnesses = new ArrayList<>();
 
     for (final GeneratedAST ast : generatedSourceCode.getProductAsts()) {
+      if (!ast.getPrimaryClassName()
+          .equals(refactoredClass)) {
+        continue;
+      }
+
       final int lastLineNumber = ast.getNumberOfLines();
       final ASTLocations astLocations = ast.createLocations();
 

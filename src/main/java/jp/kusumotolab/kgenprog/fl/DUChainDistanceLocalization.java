@@ -6,9 +6,14 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import jp.kusumotolab.kgenprog.analysis.DUChainDistanceVisitor;
 import jp.kusumotolab.kgenprog.project.ASTLocation;
+import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedName;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 
 public class DUChainDistanceLocalization extends SmellLocalization {
+
+  public DUChainDistanceLocalization(final TargetFullyQualifiedName refactoredClass) {
+    super(refactoredClass);
+  }
 
   @Override
   protected List<ASTLocation> filterLocations(List<ASTLocation> locations) {
