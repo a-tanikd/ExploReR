@@ -26,10 +26,12 @@ import com.electronwill.nightconfig.core.conversion.ObjectConverter;
 import com.electronwill.nightconfig.core.conversion.PreserveNotNull;
 import com.electronwill.nightconfig.core.conversion.SpecNotNull;
 import com.electronwill.nightconfig.core.file.FileConfig;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import ch.qos.logback.classic.Level;
 import jp.kusumotolab.kgenprog.ga.mutation.Scope;
 import jp.kusumotolab.kgenprog.ga.mutation.Scope.Type;
+import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedName;
 import jp.kusumotolab.kgenprog.project.factory.JUnitLibraryResolver.JUnitVersion;
 import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
@@ -64,6 +66,7 @@ public class Configuration {
   private final long randomSeed;
   private final Scope.Type scope;
   private final boolean needNotOutput;
+  private final TargetFullyQualifiedName refactoredClass;
   // endregion
 
   // region Constructor
@@ -83,6 +86,7 @@ public class Configuration {
     randomSeed = builder.randomSeed;
     scope = builder.scope;
     needNotOutput = builder.needNotOutput;
+    refactoredClass = builder.refactoredClass;
   }
 
   // endregion
@@ -149,6 +153,10 @@ public class Configuration {
 
   public boolean needNotOutput() {
     return needNotOutput;
+  }
+
+  public TargetFullyQualifiedName getRefactoredClass() {
+    return refactoredClass;
   }
 
   @Override
@@ -257,6 +265,10 @@ public class Configuration {
     @com.electronwill.nightconfig.core.conversion.Path("no-output")
     @PreserveNotNull
     private boolean needNotOutput = DEFAULT_NEED_NOT_OUTPUT;
+
+    @com.electronwill.nightconfig.core.conversion.Path("refactored-class")
+    @Conversion(TargetFullyQualifiedNameToString.class)
+    private TargetFullyQualifiedName refactoredClass;
 
     // endregion
 
@@ -422,6 +434,11 @@ public class Configuration {
       return this;
     }
 
+    public Builder setRefactoredClass(final TargetFullyQualifiedName refactoredClass) {
+      this.refactoredClass = refactoredClass;
+      return this;
+    }
+
     // endregion
 
     // region Private methods
@@ -429,6 +446,7 @@ public class Configuration {
     private static void validateArgument(final Builder builder) throws IllegalArgumentException {
       validateExistences(builder);
       validateCurrentDir(builder);
+      validateRefactoredClass(builder.refactoredClass);
     }
 
     private static void validateExistences(final Builder builder) throws IllegalArgumentException {
@@ -460,6 +478,13 @@ public class Configuration {
         }
       } catch (final IOException e) {
         throw new IllegalArgumentException("directory " + projectRootDir + " is not accessible");
+      }
+    }
+
+    private static void validateRefactoredClass(final TargetFullyQualifiedName refactoredClass)
+        throws IllegalArgumentException {
+      if (refactoredClass == null) {
+        throw new IllegalArgumentException("specify which class is refactored.");
       }
     }
 
@@ -641,6 +666,12 @@ public class Configuration {
       this.scope = scope;
     }
 
+    @Option(name = "--refactored-class", usage = "Specifies which class is refactored.")
+    private void setRefactoredClassFromCmdLineParser(
+        final String refactoredClass) {
+      this.refactoredClass = new TargetFullyQualifiedName(refactoredClass);
+    }
+
     // endregion
 
     private static class PathToString implements Converter<Path, String> {
@@ -748,6 +779,28 @@ public class Configuration {
           return null;
         }
         return value.toString();
+      }
+    }
+
+    private static class TargetFullyQualifiedNameToString implements
+        Converter<TargetFullyQualifiedName, String> {
+
+      @Override
+      public TargetFullyQualifiedName convertToField(String value) {
+        if (value == null) {
+          return null;
+        }
+
+        return new TargetFullyQualifiedName(value);
+      }
+
+      @Override
+      public String convertFromField(TargetFullyQualifiedName value) {
+        if (value == null) {
+          return "";
+        }
+
+        return Strings.nullToEmpty(value.toString());
       }
     }
   }

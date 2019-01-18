@@ -1,4 +1,5 @@
 root-dir = "./"
 src = ["src/"]
 test = ["test/"]
+refactored-class = "example.Foo"
 crossover-generating-count = 50
