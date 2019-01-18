@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
@@ -18,23 +20,25 @@ import io.reactivex.Single;
 import jp.kusumotolab.kgenprog.Configuration;
 import jp.kusumotolab.kgenprog.Strategies;
 import jp.kusumotolab.kgenprog.fl.Suspiciousness;
-import jp.kusumotolab.kgenprog.ga.variant.Base;
 import jp.kusumotolab.kgenprog.ga.validation.Fitness;
+import jp.kusumotolab.kgenprog.ga.validation.SimpleFitness;
+import jp.kusumotolab.kgenprog.ga.variant.Base;
 import jp.kusumotolab.kgenprog.ga.variant.Gene;
 import jp.kusumotolab.kgenprog.ga.variant.HistoricalElement;
 import jp.kusumotolab.kgenprog.ga.variant.MutationHistoricalElement;
-import jp.kusumotolab.kgenprog.ga.validation.SimpleFitness;
 import jp.kusumotolab.kgenprog.ga.variant.Variant;
 import jp.kusumotolab.kgenprog.ga.variant.VariantStore;
+import jp.kusumotolab.kgenprog.project.ASTLocation;
 import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
 import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
-import jp.kusumotolab.kgenprog.project.jdt.InsertOperation;
+import jp.kusumotolab.kgenprog.project.jdt.DeleteOperation;
 import jp.kusumotolab.kgenprog.project.test.LocalTestExecutor;
 import jp.kusumotolab.kgenprog.project.test.TestExecutor;
 import jp.kusumotolab.kgenprog.project.test.TestResult;
 import jp.kusumotolab.kgenprog.project.test.TestResults;
 import jp.kusumotolab.kgenprog.testutil.JsonKeyAlias;
+import jp.kusumotolab.kgenprog.testutil.JsonKeyAlias.CrossoverHistoricalElement;
 
 public class VariantStoreSerializerTest {
 
@@ -47,6 +51,12 @@ public class VariantStoreSerializerTest {
         .registerTypeAdapter(Patch.class, new PatchSerializer())
         .registerTypeAdapter(FileDiff.class, new FileDiffSerializer())
         .registerTypeHierarchyAdapter(HistoricalElement.class, new HistoricalElementSerializer())
+        .registerTypeHierarchyAdapter(MutationHistoricalElement.class,
+            new MutationHistoricalElementSerializer())
+        .registerTypeHierarchyAdapter(CrossoverHistoricalElement.class,
+            new CrossoverHistoricalElementSerializer())
+        .registerTypeHierarchyAdapter(Base.class, new BaseSerializer())
+        .registerTypeHierarchyAdapter(Path.class, new PathSerializer())
         .create();
   }
 
@@ -82,8 +92,14 @@ public class VariantStoreSerializerTest {
     final VariantStore variantStore = new VariantStore(config, strategies);
     final Variant initialVariant = variantStore.getInitialVariant();
     final Gene gene = new Gene(Collections.emptyList());
+
+    // このテストはBaseのシリアライズをテストしないのでtargetLocationはモックにする
+    final ASTLocation targetLocation = mock(ASTLocation.class);
+    when(targetLocation.getSourcePath()).thenReturn(project.getProductSourcePaths()
+        .get(0));
+    when(targetLocation.inferLineNumbers()).thenReturn(ASTLocation.NONE);
     final HistoricalElement element = new MutationHistoricalElement(initialVariant,
-        new Base(null, new InsertOperation(null)));
+        new Base(targetLocation, new DeleteOperation()));
 
     for (int i = 0; i < 10; i++) {
       final Variant variant = variantStore.createVariant(gene, element);
@@ -94,8 +110,10 @@ public class VariantStoreSerializerTest {
     final JsonObject serializedVariantStore = gson.toJsonTree(variantStore)
         .getAsJsonObject();
     // キーのチェック
-    assertThat(serializedVariantStore.keySet()).containsOnly(JsonKeyAlias.VariantStore.PROJECT_NAME,
-        JsonKeyAlias.VariantStore.VARIANTS);
+    assertThat(serializedVariantStore.keySet()).containsOnly(
+        JsonKeyAlias.VariantStore.PROJECT_NAME,
+        JsonKeyAlias.VariantStore.VARIANTS,
+        JsonKeyAlias.VariantStore.CONFIGURATION);
 
     // 値のチェック
     final String projectName = serializedVariantStore.get(JsonKeyAlias.VariantStore.PROJECT_NAME)
@@ -106,5 +124,26 @@ public class VariantStoreSerializerTest {
         JsonKeyAlias.VariantStore.VARIANTS)
         .getAsJsonArray();
     assertThat(serializedVariants).hasSize(11);
+  }
+
+  @Test
+  public void testConfigurationSerialization() {
+    final Path rootPath = Paths.get("example/BuildSuccess01");
+    final TargetProject project = TargetProjectFactory.create(rootPath);
+    final Configuration config = new Configuration.Builder(project)
+        .build();
+    // gsonのセットアップ
+    final Gson gson = createGson(config);
+
+    final JsonObject serializedConfiguration = gson.toJsonTree(config)
+        .getAsJsonObject();
+
+    // キーのチェック
+    final Class<?> clazz = config.getClass();
+    final String[] configFieldNames = Arrays.stream(clazz.getDeclaredFields())
+        .map(Field::getName)
+        .filter(e -> !e.startsWith("DEFAULT_"))
+        .toArray(String[]::new);
+    assertThat(serializedConfiguration.keySet()).containsOnly(configFieldNames);
   }
 }

@@ -9,7 +9,9 @@ import jp.kusumotolab.kgenprog.fl.FaultLocalization;
 import jp.kusumotolab.kgenprog.ga.codegeneration.DefaultSourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.codegeneration.SourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.crossover.Crossover;
-import jp.kusumotolab.kgenprog.ga.crossover.SinglePointCrossover;
+import jp.kusumotolab.kgenprog.ga.crossover.FirstVariantRandomSelection;
+import jp.kusumotolab.kgenprog.ga.crossover.RandomCrossover;
+import jp.kusumotolab.kgenprog.ga.crossover.SecondVariantRandomSelection;
 import jp.kusumotolab.kgenprog.ga.mutation.Mutation;
 import jp.kusumotolab.kgenprog.ga.mutation.ReorderingMutation;
 import jp.kusumotolab.kgenprog.ga.mutation.selection.RouletteStatementSelection;
@@ -43,17 +45,17 @@ public class CUILauncher {
         new RouletteStatementSelection(random);
     final Mutation mutation = new ReorderingMutation(config.getMutationGeneratingCount(), random,
         rouletteStatementSelection);
-    final Crossover crossover = new SinglePointCrossover(random,
-        config.getCrossoverGeneratingCount());
+    final Crossover crossover = new RandomCrossover(random, new FirstVariantRandomSelection(random),
+        new SecondVariantRandomSelection(random), config.getCrossoverGeneratingCount());
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();
     final SourceCodeValidation sourceCodeValidation = new DUChainDistanceValidation();
     final VariantSelection variantSelection = new MetricVariantSelection(config.getHeadcount());
     final TestExecutor testExecutor = new LocalTestExecutor(config);
     final PatchGenerator patchGenerator = new PatchGenerator();
 
-    final KGenProgMain kGenProgMain = new KGenProgMain(config, faultLocalization, mutation,
-        crossover, sourceCodeGeneration, sourceCodeValidation, variantSelection, testExecutor,
-        patchGenerator);
+    final KGenProgMain kGenProgMain =
+        new KGenProgMain(config, faultLocalization, mutation, crossover, sourceCodeGeneration,
+            sourceCodeValidation, variantSelection, testExecutor, patchGenerator);
 
     kGenProgMain.run();
   }

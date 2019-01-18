@@ -45,24 +45,13 @@ public class Configuration {
   public static final Duration DEFAULT_TIME_LIMIT = Duration.ofSeconds(60);
   public static final Duration DEFAULT_TEST_TIME_LIMIT = Duration.ofSeconds(10);
   public static final Level DEFAULT_LOG_LEVEL = Level.INFO;
-  public static final Path DEFAULT_WORKING_DIR;
   public static final Path DEFAULT_OUT_DIR = Paths.get("kgenprog-out");
   public static final long DEFAULT_RANDOM_SEED = 0;
   public static final Scope.Type DEFAULT_SCOPE = Type.PACKAGE;
   public static final boolean DEFAULT_NEED_NOT_OUTPUT = false;
 
-  static {
-    try {
-      DEFAULT_WORKING_DIR = Files.createTempDirectory("kgenprog-work");
-    } catch (final IOException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Creating a temporary directory has failed.");
-    }
-  }
-
   private final TargetProject targetProject;
   private final List<String> executionTests;
-  private final Path workingDir;
   private final Path outDir;
   private final int mutationGeneratingCount;
   private final int crossoverGeneratingCount;
@@ -82,7 +71,6 @@ public class Configuration {
   private Configuration(final Builder builder) {
     targetProject = builder.targetProject;
     executionTests = builder.executionTests;
-    workingDir = builder.workingDir;
     outDir = builder.outDir;
     mutationGeneratingCount = builder.mutationGeneratingCount;
     crossoverGeneratingCount = builder.crossoverGeneratingCount;
@@ -105,10 +93,6 @@ public class Configuration {
 
   public List<String> getExecutedTests() {
     return executionTests;
-  }
-
-  public Path getWorkingDir() {
-    return workingDir;
   }
 
   public Path getOutDir() {
@@ -220,11 +204,6 @@ public class Configuration {
     private final List<String> executionTests = new ArrayList<>();
 
     private transient TargetProject targetProject;
-
-    @com.electronwill.nightconfig.core.conversion.Path("working-dir")
-    @PreserveNotNull
-    @Conversion(PathToString.class)
-    private Path workingDir = DEFAULT_WORKING_DIR;
 
     @com.electronwill.nightconfig.core.conversion.Path("out-dir")
     @PreserveNotNull
@@ -364,11 +343,6 @@ public class Configuration {
       return this;
     }
 
-    public Builder setWorkingDir(final Path workingDir) {
-      this.workingDir = workingDir;
-      return this;
-    }
-
     public Builder setOutDir(final Path outDir) {
       this.outDir = outDir;
       return this;
@@ -462,7 +436,6 @@ public class Configuration {
       builder.productPaths.forEach(Builder::validateExistence);
       builder.testPaths.forEach(Builder::validateExistence);
       builder.classPaths.forEach(Builder::validateExistence);
-      validateExistence(builder.workingDir);
     }
 
     private static void validateExistence(final Path path) throws IllegalArgumentException {
@@ -515,33 +488,40 @@ public class Configuration {
     }
 
     private void resolvePaths() {
-      final Path configDir = getParent(configPath, Paths.get("."));
-
-      rootDir = configDir.resolve(rootDir)
-          .normalize();
+      rootDir = resolveAgainstConfigDirAndNormalize(rootDir);
       productPaths = productPaths.stream()
-          .map(p -> configDir.resolve(p)
-              .normalize())
+          .map(this::resolveAgainstConfigDirAndNormalize)
           .collect(Collectors.toList());
       testPaths = testPaths.stream()
-          .map(p -> configDir.resolve(p)
-              .normalize())
+          .map(this::resolveAgainstConfigDirAndNormalize)
           .collect(Collectors.toList());
       classPaths = classPaths.stream()
-          .map(p -> configDir.resolve(p)
-              .normalize())
+          .map(this::resolveAgainstConfigDirAndNormalize)
           .collect(Collectors.toList());
-      workingDir = configDir.resolve(workingDir)
-          .normalize();
 
       if (!outDir.equals(DEFAULT_OUT_DIR)) {
-        outDir = configDir.resolve(outDir)
-            .normalize();
+        outDir = resolveAgainstConfigDirAndNormalize(outDir);
       }
     }
 
-    private Path getParent(final Path path, final Path defaultPath) {
-      return path.getParent() != null ? path.getParent() : defaultPath;
+    private Path resolveAgainstConfigDirAndNormalize(final Path path) {
+      return checkSymbolicLink(configPath.resolveSibling(path)
+          .normalize());
+    }
+
+    /**
+     * Checks whether the given path is a symbolic link, and returns it as is. If it is a symbolic
+     * link, outputs warning message; otherwise do nothing.
+     *
+     * @param path the path to be checked
+     * @return the given path
+     */
+    private Path checkSymbolicLink(final Path path) {
+      if (Files.isSymbolicLink(path)) {
+        log.warn("symbolic link may not be resolved: " + path.toString());
+      }
+
+      return path;
     }
 
     // endregion
@@ -588,12 +568,6 @@ public class Configuration {
         handler = StringArrayOptionHandler.class)
     private void addExecutionTestFromCmdLineParser(final String executionTest) {
       this.executionTests.add(executionTest);
-    }
-
-    @Option(name = "-w", aliases = "--working-dir", metaVar = "<path>",
-        usage = "Specifies the path to working directory.")
-    private void setWorkingDirFromCmdLineParser(final String workingDir) {
-      this.workingDir = Paths.get(workingDir);
     }
 
     @Option(name = "-o", aliases = "--out-dir", metaVar = "<path>",
