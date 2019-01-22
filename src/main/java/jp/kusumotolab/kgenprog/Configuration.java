@@ -446,7 +446,7 @@ public class Configuration {
     private static void validateArgument(final Builder builder) throws IllegalArgumentException {
       validateExistences(builder);
       validateCurrentDir(builder);
-      validateRefactoredClass(builder.refactoredMethod);
+      validateRefactoredMethod(builder.refactoredMethod);
     }
 
     private static void validateExistences(final Builder builder) throws IllegalArgumentException {
@@ -481,7 +481,7 @@ public class Configuration {
       }
     }
 
-    private static void validateRefactoredClass(
+    private static void validateRefactoredMethod(
         final TargetFullyQualifiedMethodName refactoredMethod)
         throws IllegalArgumentException {
       if (refactoredMethod == null) {
@@ -668,7 +668,7 @@ public class Configuration {
     }
 
     @Option(name = "--refactored-method", usage = "Specifies which class is refactored.")
-    private void setRefactoredClassFromCmdLineParser(
+    private void setRefactoredMethodFromCmdLineParser(
         final String refactoredMethod) {
       this.refactoredMethod = new TargetFullyQualifiedMethodName(refactoredMethod);
     }
