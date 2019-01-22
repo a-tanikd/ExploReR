@@ -1,4 +1,5 @@
 root-dir = "./"
 src = ["src/"]
 test = ["test/"]
+refactored-method = "example.Foo#foo"
 mutation-generating-count = 50

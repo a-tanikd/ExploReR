@@ -17,9 +17,11 @@ import ch.qos.logback.classic.Level;
 import jp.kusumotolab.kgenprog.Configuration.Builder;
 import jp.kusumotolab.kgenprog.ga.mutation.Scope;
 import jp.kusumotolab.kgenprog.ga.mutation.Scope.Type;
+import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedMethodName;
 import jp.kusumotolab.kgenprog.project.factory.JUnitLibraryResolver.JUnitVersion;
 import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
+import jp.kusumotolab.kgenprog.testutil.ExampleAlias.Fqn;
 
 public class ConfigurationBuilderTest {
 
@@ -28,11 +30,15 @@ public class ConfigurationBuilderTest {
   private final Path testPath = rootDir.resolve("test");
   private final List<Path> productPaths = ImmutableList.of(productPath);
   private final List<Path> testPaths = ImmutableList.of(testPath);
+  private final TargetFullyQualifiedMethodName refactoredMethod =
+      new TargetFullyQualifiedMethodName(Fqn.FOO.toString() + "#foo");
 
   @Test
   public void testBuild() {
     final Builder builder = new Builder(rootDir, productPaths, testPaths);
     final Configuration config = builder.build();
+//    final Configuration config = builder.setRefactoredClass((TargetFullyQualifiedName) Fqn.FOO)
+//        .build();
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
     assertThat(config.getMutationGeneratingCount()).isEqualTo(
@@ -497,7 +503,8 @@ public class ConfigurationBuilderTest {
   @Test
   public void testBuildFromCmdLineArgs() {
     final String[] args =
-        {"-r", rootDir.toString(), "-s", productPath.toString(), "-t", testPath.toString(),};
+        {"-r", rootDir.toString(), "-s", productPath.toString(), "-t", testPath.toString(),
+            "--refactored-method", refactoredMethod.toString()};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -519,6 +526,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -530,7 +538,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithOutDir() {
     final Path outDir = rootDir.resolve("out");
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "-o", outDir.toString()};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "-o",
+        outDir.toString(),};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(outDir);
@@ -552,6 +561,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -563,7 +573,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithMutationGeneratingCount() {
     final int mutationGeneratingCount = 50;
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--mutation-generating-count",
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(),
+        "--mutation-generating-count",
         Integer.toString(mutationGeneratingCount)};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
@@ -585,6 +596,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -596,7 +608,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithCrossoverGeneratingCount() {
     final int crossoverGeneratingCount = 50;
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--crossover-generating-count",
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(),
+        "--crossover-generating-count",
         Integer.toString(crossoverGeneratingCount)};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
@@ -618,6 +631,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -629,7 +643,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithHeadcount() {
     final int headcount = 50;
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--headcount", Integer.toString(headcount)};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "--headcount",
+        Integer.toString(headcount)};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -651,6 +666,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -662,7 +678,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithMaxGeneration() {
     final int maxGeneration = 50;
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--max-generation", Integer.toString(maxGeneration)};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "--max-generation",
+        Integer.toString(maxGeneration)};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -684,6 +701,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -695,7 +713,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithTimeLimit() {
     final Duration timeLimit = Duration.ofSeconds(1800);
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--time-limit", Long.toString(timeLimit.getSeconds())};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "--time-limit",
+        Long.toString(timeLimit.getSeconds())};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -717,6 +736,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -728,7 +748,9 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithRequiredSolutionsCount() {
     final int requiredSolutionsCount = 10;
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--required-solutions", Integer.toString(requiredSolutionsCount)};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(),
+        "--required-solutions",
+        Integer.toString(requiredSolutionsCount)};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -749,6 +771,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -759,7 +782,8 @@ public class ConfigurationBuilderTest {
   @Test
   public void testBuildFromCmdLineArgsWithVerbose() {
     final String[] args =
-        {"-r", rootDir.toString(), "-s", productPath.toString(), "-t", testPath.toString(), "-v"};
+        {"-r", rootDir.toString(), "-s", productPath.toString(), "-t", testPath.toString(),
+            "--refactored-method", refactoredMethod.toString(), "-v"};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -781,6 +805,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -791,7 +816,8 @@ public class ConfigurationBuilderTest {
   @Test
   public void testBuildFromCmdLineArgsWithQuiet() {
     final String[] args =
-        {"-r", rootDir.toString(), "-s", productPath.toString(), "-t", testPath.toString(), "-q"};
+        {"-r", rootDir.toString(), "-s", productPath.toString(), "-t", testPath.toString(),
+            "--refactored-method", refactoredMethod.toString(), "-q"};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -813,6 +839,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -824,7 +851,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithClassPath() {
     final Path classPath = rootDir.resolve("lib");
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "-c", classPath.toString()};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "-c",
+        classPath.toString()};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -846,6 +874,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -857,7 +886,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithRandomSeed() {
     final long randomSeed = 10;
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--random-seed", Long.toString(randomSeed)};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "--random-seed",
+        Long.toString(randomSeed)};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -879,6 +909,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(randomSeed);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -890,7 +921,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithScope() {
     final Scope.Type scope = Type.FILE;
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--scope", scope.toString()};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "--scope",
+        scope.toString()};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -912,6 +944,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(scope);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, ImmutableList.of(productPath),
@@ -923,7 +956,8 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithExecTest() {
     final String executionTest = "example.FooTest";
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "-x", executionTest};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "-x",
+        executionTest};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getExecutedTests()).containsExactlyInAnyOrder(executionTest);
@@ -934,7 +968,9 @@ public class ConfigurationBuilderTest {
     final String executionTest1 = "example.FooTest";
     final String executionTest2 = "example.BarTest";
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "-x", executionTest1, executionTest2};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "-x",
+        executionTest1,
+        executionTest2};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getExecutedTests()).containsExactlyInAnyOrder(executionTest1, executionTest2);
@@ -944,7 +980,9 @@ public class ConfigurationBuilderTest {
   public void testBuildFromCmdLineArgsWithTestTimeLimit() {
     final Duration testTimeLimit = Duration.ofSeconds(99);
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--test-time-limit", String.valueOf(testTimeLimit.getSeconds())};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(),
+        "--test-time-limit",
+        String.valueOf(testTimeLimit.getSeconds())};
     final Configuration config = Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getTestTimeLimit()).isEqualTo(testTimeLimit);
@@ -959,7 +997,8 @@ public class ConfigurationBuilderTest {
 
     // 別のディレクトリで指定すると
     final String[] args =
-        {"-r", "example/BuildSuccess01", "-s", productPath.toString(), "-t", testPath.toString()};
+        {"-r", "example/BuildSuccess01", "-s", productPath.toString(), "-t", testPath.toString(),
+            "--refactored-method", refactoredMethod.toString(),};
     Builder.buildFromCmdLineArgs(args);
 
     // 警告でるはず
@@ -975,7 +1014,8 @@ public class ConfigurationBuilderTest {
     System.setOut(new PrintStream(out));
 
     // 同じディレクトリで指定すると
-    final String[] args = {"-r", "./", "-s", productPath.toString(), "-t", testPath.toString()};
+    final String[] args = {"-r", "./", "-s", productPath.toString(), "-t", testPath.toString(),
+        "--refactored-method", refactoredMethod.toString(),};
     Builder.buildFromCmdLineArgs(args);
 
     // 警告でないはず
@@ -988,7 +1028,7 @@ public class ConfigurationBuilderTest {
   @Test
   public void testBuildFromCmdLineArgsWithNeedNotOutput() {
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "--no-output"};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "--no-output"};
     final Configuration config = Configuration.Builder.buildFromCmdLineArgs(args);
 
     assertThat(config.getOutDir()).isEqualTo(Configuration.DEFAULT_OUT_DIR);
@@ -1010,6 +1050,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isTrue();
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject = TargetProjectFactory.create(rootDir, productPaths,
         testPaths, Collections.emptyList(), JUnitVersion.JUNIT4);
@@ -1019,8 +1060,8 @@ public class ConfigurationBuilderTest {
   @Test
   public void testNotExistingRootDir() {
     final Path notExistingRootDir = Paths.get("notExistingRootDir");
-    final String[] args = {"-r", notExistingRootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString()};
+    final String[] args = {"-r", notExistingRootDir.toString(), "-s", productPath.toString(),
+        "--refactored-method", refactoredMethod.toString(), "-t", testPath.toString()};
 
     assertThatThrownBy(() -> Builder.buildFromCmdLineArgs(args))
         .isInstanceOf(IllegalArgumentException.class)
@@ -1031,7 +1072,8 @@ public class ConfigurationBuilderTest {
   public void testNotExistingProductDir() {
     final Path notExistingProductDir = Paths.get("notExistingProductDir");
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(),
-        notExistingProductDir.toString(), "-t", testPath.toString()};
+        notExistingProductDir.toString(), "-t", testPath.toString(), "--refactored-method",
+        refactoredMethod.toString(),};
 
     assertThatThrownBy(() -> Builder.buildFromCmdLineArgs(args))
         .isInstanceOf(IllegalArgumentException.class)
@@ -1042,7 +1084,8 @@ public class ConfigurationBuilderTest {
   public void testNotExistingTestDir() {
     final Path notExistingTestDir = Paths.get("notExistingTestDir");
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), notExistingTestDir.toString()};
+        testPath.toString(), notExistingTestDir.toString(), "--refactored-method",
+        refactoredMethod.toString(),};
 
     assertThatThrownBy(() -> Builder.buildFromCmdLineArgs(args))
         .isInstanceOf(IllegalArgumentException.class)
@@ -1053,7 +1096,8 @@ public class ConfigurationBuilderTest {
   public void testNotExistingClassPath() {
     final Path notExistingClassPath = Paths.get("notExistingClassPath");
     final String[] args = {"-r", rootDir.toString(), "-s", productPath.toString(), "-t",
-        testPath.toString(), "-c", notExistingClassPath.toString()};
+        testPath.toString(), "--refactored-method", refactoredMethod.toString(), "-c",
+        notExistingClassPath.toString()};
 
     assertThatThrownBy(() -> Builder.buildFromCmdLineArgs(args))
         .isInstanceOf(IllegalArgumentException.class)
@@ -1085,6 +1129,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1119,6 +1164,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1153,6 +1199,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1187,6 +1234,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1222,6 +1270,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1257,6 +1306,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1291,6 +1341,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1325,6 +1376,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1359,6 +1411,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1394,6 +1447,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1426,6 +1480,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final Path classPath = rootDir.resolve("lib");
     final TargetProject expectedProject =
@@ -1462,6 +1517,7 @@ public class ConfigurationBuilderTest {
 
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1497,6 +1553,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getScope()).isEqualTo(scope);
 
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1529,6 +1586,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final String executionTest1 = "example.FooTest";
     final String executionTest2 = "example.BarTest";
@@ -1567,6 +1625,7 @@ public class ConfigurationBuilderTest {
 
     final boolean needNotOutput = true;
     assertThat(config.needNotOutput()).isEqualTo(needNotOutput);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1603,6 +1662,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1642,6 +1702,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1681,6 +1742,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1719,6 +1781,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1757,6 +1820,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1796,6 +1860,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1836,6 +1901,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1874,6 +1940,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1911,6 +1978,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -1945,6 +2013,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final Path classPathFromConfigFile = rootDir.resolve("lib");
     final TargetProject projectWithClassPathFromConfigFile =
@@ -1989,6 +2058,7 @@ public class ConfigurationBuilderTest {
 
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -2027,6 +2097,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getScope()).isEqualTo(scopeFromCmdLine);
 
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
@@ -2060,6 +2131,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final String executionTestFromConfigFile1 = "example.FooTest";
     final String executionTestFromConfigFile2 = "example.BarTest";
@@ -2102,6 +2174,8 @@ public class ConfigurationBuilderTest {
     assertThat(config.needNotOutput()).isNotEqualTo(needNotOutputFromConfigFile);
     assertThat(config.needNotOutput()).isTrue();
 
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
+
     final TargetProject expectedProject =
         TargetProjectFactory.create(rootDir, productPaths, testPaths, Collections.emptyList(),
             JUnitVersion.JUNIT4);
@@ -2142,6 +2216,7 @@ public class ConfigurationBuilderTest {
     assertThat(config.getRandomSeed()).isEqualTo(Configuration.DEFAULT_RANDOM_SEED);
     assertThat(config.getScope()).isEqualTo(Configuration.DEFAULT_SCOPE);
     assertThat(config.needNotOutput()).isEqualTo(Configuration.DEFAULT_NEED_NOT_OUTPUT);
+    assertThat(config.getRefactoredMethod()).isEqualTo(refactoredMethod);
 
     final TargetProject expectedProject = TargetProjectFactory.create(rootDir,
         ImmutableList.of(link), testPaths, Collections.emptyList(), JUnitVersion.JUNIT4);
