@@ -329,7 +329,7 @@ public class Configuration {
           | NoSuchFileException e) {
         // todo: make error message of InvalidValueException more user-friendly
         parser.printUsage(System.err);
-        throw new IllegalArgumentException(e.getMessage());
+        throw new IllegalArgumentException(e.getMessage(), e);
       }
 
       return builder.build();
