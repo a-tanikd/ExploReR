@@ -40,7 +40,7 @@ public class CUILauncher {
     setLogLevel(config.getLogLevel());
 
     final FaultLocalization faultLocalization =
-        new DUChainDistanceLocalization(config.getRefactoredClass());
+        new DUChainDistanceLocalization(config.getRefactoredMethod());
     final Random random = new Random(config.getRandomSeed());
     final RouletteStatementSelection rouletteStatementSelection =
         new RouletteStatementSelection(random);

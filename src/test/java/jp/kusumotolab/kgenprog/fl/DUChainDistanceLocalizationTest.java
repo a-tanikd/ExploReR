@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 import jp.kusumotolab.kgenprog.Configuration;
 import jp.kusumotolab.kgenprog.ga.variant.Variant;
-import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedName;
+import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedMethodName;
 import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
 import jp.kusumotolab.kgenprog.testutil.TestUtil;
@@ -22,7 +22,7 @@ public class DUChainDistanceLocalizationTest {
     final Variant initialVariant = TestUtil.createVariant(config);
 
     final FaultLocalization fl = new DUChainDistanceLocalization(
-        new TargetFullyQualifiedName("example.Foo"));
+        new TargetFullyQualifiedMethodName("example.Foo#foo"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
@@ -38,7 +38,7 @@ public class DUChainDistanceLocalizationTest {
     final Variant initialVariant = TestUtil.createVariant(config);
 
     final FaultLocalization fl = new DUChainDistanceLocalization(
-        new TargetFullyQualifiedName("example.Foo"));
+        new TargetFullyQualifiedMethodName("example.Foo#foo"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
@@ -54,12 +54,12 @@ public class DUChainDistanceLocalizationTest {
     final Variant initialVariant = TestUtil.createVariant(config);
 
     final FaultLocalization fl = new DUChainDistanceLocalization(
-        new TargetFullyQualifiedName("example.GeometricMean"));
+        new TargetFullyQualifiedMethodName("example.GeometricMean#geometricMean"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 
     assertThat(suspiciousnesses).extracting(Suspiciousness::getValue)
-        .containsExactlyInAnyOrder(2.0, 2.0, 0.0, 0.0);
+        .containsExactlyInAnyOrder(2.0, 2.0, 0.0);
   }
 
   @Test
@@ -70,7 +70,7 @@ public class DUChainDistanceLocalizationTest {
     final Variant initialVariant = TestUtil.createVariant(config);
 
     final FaultLocalization fl = new DUChainDistanceLocalization(
-        new TargetFullyQualifiedName("example.Max3"));
+        new TargetFullyQualifiedMethodName("example.Max3#max3"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
 

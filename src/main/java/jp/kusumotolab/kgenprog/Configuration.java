@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableList;
 import ch.qos.logback.classic.Level;
 import jp.kusumotolab.kgenprog.ga.mutation.Scope;
 import jp.kusumotolab.kgenprog.ga.mutation.Scope.Type;
-import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedName;
+import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedMethodName;
 import jp.kusumotolab.kgenprog.project.factory.JUnitLibraryResolver.JUnitVersion;
 import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
@@ -66,7 +66,7 @@ public class Configuration {
   private final long randomSeed;
   private final Scope.Type scope;
   private final boolean needNotOutput;
-  private final TargetFullyQualifiedName refactoredClass;
+  private final TargetFullyQualifiedMethodName refactoredMethod;
   // endregion
 
   // region Constructor
@@ -86,7 +86,7 @@ public class Configuration {
     randomSeed = builder.randomSeed;
     scope = builder.scope;
     needNotOutput = builder.needNotOutput;
-    refactoredClass = builder.refactoredClass;
+    refactoredMethod = builder.refactoredMethod;
   }
 
   // endregion
@@ -155,8 +155,8 @@ public class Configuration {
     return needNotOutput;
   }
 
-  public TargetFullyQualifiedName getRefactoredClass() {
-    return refactoredClass;
+  public TargetFullyQualifiedMethodName getRefactoredMethod() {
+    return refactoredMethod;
   }
 
   @Override
@@ -266,9 +266,9 @@ public class Configuration {
     @PreserveNotNull
     private boolean needNotOutput = DEFAULT_NEED_NOT_OUTPUT;
 
-    @com.electronwill.nightconfig.core.conversion.Path("refactored-class")
-    @Conversion(TargetFullyQualifiedNameToString.class)
-    private TargetFullyQualifiedName refactoredClass;
+    @com.electronwill.nightconfig.core.conversion.Path("refactored-method")
+    @Conversion(TargetFullyQualifiedMethodNameToString.class)
+    private TargetFullyQualifiedMethodName refactoredMethod;
 
     // endregion
 
@@ -434,8 +434,8 @@ public class Configuration {
       return this;
     }
 
-    public Builder setRefactoredClass(final TargetFullyQualifiedName refactoredClass) {
-      this.refactoredClass = refactoredClass;
+    public Builder setRefactoredMethod(final TargetFullyQualifiedMethodName refactoredMethod) {
+      this.refactoredMethod = refactoredMethod;
       return this;
     }
 
@@ -446,7 +446,7 @@ public class Configuration {
     private static void validateArgument(final Builder builder) throws IllegalArgumentException {
       validateExistences(builder);
       validateCurrentDir(builder);
-      validateRefactoredClass(builder.refactoredClass);
+      validateRefactoredClass(builder.refactoredMethod);
     }
 
     private static void validateExistences(final Builder builder) throws IllegalArgumentException {
@@ -481,10 +481,11 @@ public class Configuration {
       }
     }
 
-    private static void validateRefactoredClass(final TargetFullyQualifiedName refactoredClass)
+    private static void validateRefactoredClass(
+        final TargetFullyQualifiedMethodName refactoredMethod)
         throws IllegalArgumentException {
-      if (refactoredClass == null) {
-        throw new IllegalArgumentException("specify which class is refactored.");
+      if (refactoredMethod == null) {
+        throw new IllegalArgumentException("specify which method is refactored.");
       }
     }
 
@@ -666,10 +667,10 @@ public class Configuration {
       this.scope = scope;
     }
 
-    @Option(name = "--refactored-class", usage = "Specifies which class is refactored.")
+    @Option(name = "--refactored-method", usage = "Specifies which class is refactored.")
     private void setRefactoredClassFromCmdLineParser(
-        final String refactoredClass) {
-      this.refactoredClass = new TargetFullyQualifiedName(refactoredClass);
+        final String refactoredMethod) {
+      this.refactoredMethod = new TargetFullyQualifiedMethodName(refactoredMethod);
     }
 
     // endregion
@@ -782,20 +783,20 @@ public class Configuration {
       }
     }
 
-    private static class TargetFullyQualifiedNameToString implements
-        Converter<TargetFullyQualifiedName, String> {
+    private static class TargetFullyQualifiedMethodNameToString implements
+        Converter<TargetFullyQualifiedMethodName, String> {
 
       @Override
-      public TargetFullyQualifiedName convertToField(String value) {
+      public TargetFullyQualifiedMethodName convertToField(String value) {
         if (value == null) {
           return null;
         }
 
-        return new TargetFullyQualifiedName(value);
+        return new TargetFullyQualifiedMethodName(value);
       }
 
       @Override
-      public String convertFromField(TargetFullyQualifiedName value) {
+      public String convertFromField(TargetFullyQualifiedMethodName value) {
         if (value == null) {
           return "";
         }

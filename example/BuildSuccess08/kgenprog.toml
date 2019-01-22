@@ -1,4 +1,4 @@
 root-dir = "./"
 src = ["src/"]
 test = ["test/"]
-refactored-class = "example.Foo"
+refactored-method = "example.Foo#foo"
