@@ -24,7 +24,7 @@ public class MoveAfterOperation extends JDTOperation {
     final ASTNode target1 = location.locate(ast.getRoot());
     final ASTNode target2 = location2.locate(ast.getRoot());
 
-    final ASTNode copiedTarget2 = astRewrite.createCopyTarget(astNode);
+    final ASTNode copiedTarget2 = ASTNode.copySubtree(astRewrite.getAST(), astNode);
 
     final ListRewrite listRewrite = astRewrite.getListRewrite(target1.getParent(),
         (ChildListPropertyDescriptor) target1.getLocationInParent());
