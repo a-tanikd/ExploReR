@@ -20,7 +20,8 @@ import jp.kusumotolab.kgenprog.ga.variant.VariantStore;
 import jp.kusumotolab.kgenprog.project.FullyQualifiedName;
 import jp.kusumotolab.kgenprog.project.GeneratedAST;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
-import jp.kusumotolab.kgenprog.project.jdt.SwapOperation;
+import jp.kusumotolab.kgenprog.project.jdt.JDTOperation;
+import jp.kusumotolab.kgenprog.project.jdt.MoveAfterOperation;
 
 public class ReorderingMutation extends Mutation {
 
@@ -68,8 +69,8 @@ public class ReorderingMutation extends Mutation {
   }
 
   private Base makeBase(Suspiciousness suspiciousness) {
-    final JDTASTLocation location = (JDTASTLocation)suspiciousness.getLocation();
-    final SwapOperation operation = new SwapOperation(chooseNodeAtRandom(location));
+    final JDTASTLocation location = (JDTASTLocation) suspiciousness.getLocation();
+    final JDTOperation operation = new MoveAfterOperation(chooseNodeAtRandom(location));
 
     return new Base(location, operation);
   }
@@ -77,7 +78,7 @@ public class ReorderingMutation extends Mutation {
   private ASTNode chooseNodeAtRandom(final JDTASTLocation location) {
     final GeneratedAST<?> generatedAST = location.getGeneratedAST();
     final FullyQualifiedName fqn = generatedAST.getPrimaryClassName();
-    final Statement statement = (Statement)location.node;
+    final Statement statement = (Statement) location.node;
     final MethodName methodName = new MethodName(fqn, statement);
     final Scope scope = new Scope(type, methodName);
 
