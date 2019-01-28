@@ -28,7 +28,7 @@ public class DUChainDistanceValidation extends MetricValidation {
       final CompilationUnit compilationUnit = ((GeneratedJDTAST<ProductSourcePath>) ast).getRoot();
       final DUChainDistanceVisitor visitor = new DUChainDistanceVisitor(compilationUnit);
 
-      log.debug("\n{}", ast.getSourceCode());
+      log.trace("\n{}", ast.getSourceCode());
 
       compilationUnit.accept(visitor);
       totalDistance += visitor.getDistance();
