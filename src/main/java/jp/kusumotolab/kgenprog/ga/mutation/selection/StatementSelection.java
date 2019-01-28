@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import org.eclipse.jdt.core.dom.Statement;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import jp.kusumotolab.kgenprog.ga.Roulette;
@@ -55,7 +56,11 @@ public abstract class StatementSelection implements CandidateSelection {
     for (final ReuseCandidate<Statement> reuseCandidate : reuseCandidates) {
       packageNameStatementMultimap.put(reuseCandidate.getPackageName(), reuseCandidate);
       fqnStatementMultiMap.put(reuseCandidate.getFqn(), reuseCandidate);
-      methodNameStatementMultimap.put(new MethodName(reuseCandidate), reuseCandidate);
+
+      final MethodName methodName = new MethodName(reuseCandidate);
+      if (!Strings.isNullOrEmpty(methodName.getMethodName())) {
+        methodNameStatementMultimap.put(methodName, reuseCandidate);
+      }
     }
   }
 

@@ -23,6 +23,10 @@ public class MethodName {
   private static String getMethodName(final Statement statement) {
     ASTNode currentNode = statement.getParent();
     while (currentNode.getNodeType() != ASTNode.METHOD_DECLARATION) {
+      if (currentNode.getNodeType() == ASTNode.INITIALIZER) {
+        return "";
+      }
+
       currentNode = currentNode.getParent();
     }
 
