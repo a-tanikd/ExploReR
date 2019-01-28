@@ -72,11 +72,10 @@ public class DUChainDistanceVisitor extends ASTVisitor {
 
     ASTNode current = getParentStatement(node);
     while (current.getParent() != declaringBlockLikeNode) {
-      if (current.getParent()
-          .getNodeType() == ASTNode.SWITCH_STATEMENT) {
+      if (isSwitchStatement(current.getParent())) {
         distance += ((SwitchStatement) current.getParent()).statements()
             .indexOf(current) + 1;
-      } else if (isSimpleStatement(current)) {
+      } else if (!isBlockStatement(current)) {
         final Block parentBlock = (Block) current.getParent();
         distance += parentBlock.statements()
             .indexOf(current) + 1;
@@ -97,7 +96,7 @@ public class DUChainDistanceVisitor extends ASTVisitor {
   }
 
   private int indexOfIn(ASTNode of, ASTNode in) {
-    if (isSwichStatement(in)) {
+    if (isSwitchStatement(in)) {
       return ((SwitchStatement) in).statements()
           .indexOf(of);
     } else if (in.getNodeType() == ASTNode.BLOCK) {
@@ -132,8 +131,12 @@ public class DUChainDistanceVisitor extends ASTVisitor {
     return (Statement) parent;
   }
 
-  private boolean isSwichStatement(ASTNode node) {
+  private boolean isSwitchStatement(ASTNode node) {
     return node.getNodeType() == ASTNode.SWITCH_STATEMENT;
+  }
+
+  private boolean isBlockStatement(ASTNode node) {
+    return node.getNodeType() == ASTNode.BLOCK;
   }
 
   private boolean isSimpleStatement(ASTNode node) {
