@@ -39,7 +39,7 @@ import jp.kusumotolab.kgenprog.project.factory.TargetProject;
 import jp.kusumotolab.kgenprog.project.factory.TargetProjectFactory;
 import jp.kusumotolab.kgenprog.project.jdt.GeneratedJDTAST;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
-import jp.kusumotolab.kgenprog.project.jdt.SwapOperation;
+import jp.kusumotolab.kgenprog.project.jdt.MoveAfterOperation;
 import jp.kusumotolab.kgenprog.testutil.TestUtil;
 
 public class ReorderingMutationTest {
@@ -136,13 +136,13 @@ public class ReorderingMutationTest {
     assertThat(targetLocation.node).isSameSourceCodeAs("return n;");
 
     final Operation operation = base.getOperation();
-    assertThat(operation).isInstanceOf(SwapOperation.class);
+    assertThat(operation).isInstanceOf(MoveAfterOperation.class);
 
-    final SwapOperation swapOperation = (SwapOperation) operation;
-    final Field field = swapOperation.getClass()
+    final MoveAfterOperation moveAfterOperation = (MoveAfterOperation) operation;
+    final Field field = moveAfterOperation.getClass()
         .getDeclaredField("astNode");
     field.setAccessible(true);
-    final ASTNode node = (ASTNode) field.get(swapOperation);
+    final ASTNode node = (ASTNode) field.get(operation);
     assertThat(node).isSameSourceCodeAs("return n;");
 
   }
@@ -225,7 +225,8 @@ public class ReorderingMutationTest {
     }
 
     final Gene initialGene = new Gene(Collections.emptyList());
-    return new Variant(0, 0, initialGene, sourceCode, null, new SimpleFitness(0.0), suspiciousnesses,
+    return new Variant(0, 0, initialGene, sourceCode, null, new SimpleFitness(0.0),
+        suspiciousnesses,
         null);
   }
 
