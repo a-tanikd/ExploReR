@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.junit.Ignore;
 import org.junit.Test;
 import jp.kusumotolab.kgenprog.fl.Suspiciousness;
 import jp.kusumotolab.kgenprog.ga.mutation.ReorderingMutation;
@@ -88,6 +89,7 @@ public class ReorderingMutationTest {
     assertThat(variantList).hasSize(mutationGeneratingCount);
   }
 
+  @Ignore
   @Test
   public void testBias() {
     final GeneratedSourceCode generatedSourceCode = createGeneratedSourceCode();
