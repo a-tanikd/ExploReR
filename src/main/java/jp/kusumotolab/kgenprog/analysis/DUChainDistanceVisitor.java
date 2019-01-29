@@ -75,6 +75,10 @@ public class DUChainDistanceVisitor extends ASTVisitor {
       if (isSwitchStatement(current.getParent())) {
         distance += ((SwitchStatement) current.getParent()).statements()
             .indexOf(current) + 1;
+      } else if (isSimpleBlock(current.getParent())) {
+        final Block parentBlock = (Block) current.getParent();
+        distance += parentBlock.statements()
+            .indexOf(current) + 1;
       } else if (isBlockStatement(current.getParent())) {
         final Block parentBlock = (Block) current.getParent();
         distance += parentBlock.statements()
@@ -138,6 +142,10 @@ public class DUChainDistanceVisitor extends ASTVisitor {
     return node.getNodeType() == ASTNode.SWITCH_STATEMENT;
   }
 
+  private boolean isSimpleBlock(final ASTNode node) {
+    return isBlockStatement(node) && isBlockStatement(node.getParent());
+  }
+
   private boolean isBlockStatement(ASTNode node) {
     return node.getNodeType() == ASTNode.BLOCK;
   }
@@ -183,4 +191,71 @@ public class DUChainDistanceVisitor extends ASTVisitor {
     }
   }
 
+//  private List<Statement> getStatements(final ASTNode complexStatement) {
+//    if (isSwitchStatement(complexStatement)) {
+//      return ((SwitchStatement) complexStatement).statements();
+//    }
+//
+//    if (isDoStatement(complexStatement)) {
+//      final Statement body = ((DoStatement) complexStatement).getBody();
+//      return getStatementsFromBody(body);
+//    }
+//
+//    if (isEnhancedForStatement(complexStatement)) {
+//      final Statement body = ((EnhancedForStatement) complexStatement).getBody();
+//      return getStatementsFromBody(body);
+//    }
+//
+//    if (isForStatemen(complexStatement)) {
+//      final Statement body = ((ForStatement) complexStatement).getBody();
+//      return getStatementsFromBody(body);
+//    }
+//
+//    if (isIfStatement(complexStatement)) {
+//      final Statement body = ((IfStatement) complexStatement).getThenStatement();
+//      return getStatementsFromBody(body);
+//    }
+//
+//    if (isTryStatement(complexStatement)) {
+//      final Statement body = ((TryStatement) complexStatement).getBody();
+//      return getStatementsFromBody(body);
+//    }
+//
+//    if (isWhileStatement(complexStatement)) {
+//      final Statement body = ((WhileStatement) complexStatement).getBody();
+//      return getStatementsFromBody(body);
+//    }
+//
+//    throw new IllegalStateException(
+//        "this node does not have statements: " + complexStatement.toString());
+//  }
+//
+//  private List<Statement> getStatementsFromBody(Statement body) {
+//    return isBlockStatement(body) ? ((Block) body).statements()
+//        : ImmutableList.of(body);
+//  }
+//
+//  private boolean isDoStatement(final ASTNode node) {
+//    return node.getNodeType() == ASTNode.DO_STATEMENT;
+//  }
+//
+//  private boolean isEnhancedForStatement(final ASTNode node) {
+//    return node.getNodeType() == ASTNode.ENHANCED_FOR_STATEMENT;
+//  }
+//
+//  private boolean isForStatemen(final ASTNode node) {
+//    return node.getNodeType() == ASTNode.FOR_STATEMENT;
+//  }
+//
+//  private boolean isIfStatement(final ASTNode node) {
+//    return node.getNodeType() == ASTNode.IF_STATEMENT;
+//  }
+//
+//  private boolean isTryStatement(final ASTNode node) {
+//    return node.getNodeType() == ASTNode.TRY_STATEMENT;
+//  }
+//
+//  private boolean isWhileStatement(final ASTNode node) {
+//    return node.getNodeType() == ASTNode.WHILE_STATEMENT;
+//  }
 }
