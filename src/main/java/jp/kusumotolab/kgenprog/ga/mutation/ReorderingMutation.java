@@ -53,11 +53,7 @@ public class ReorderingMutation extends Mutation {
       setCandidates(variant.getGeneratedSourceCode()
           .getProductAsts());
 
-      final Function<Suspiciousness, Double> weightFunction = susp -> Math.pow(susp.getValue(), 2);
-      final Roulette<Suspiciousness> suspiciousnessRoulette =
-          new Roulette<>(suspiciousnesses, weightFunction, random);
-
-      final Suspiciousness suspiciousness = suspiciousnessRoulette.exec();
+      final Suspiciousness suspiciousness = selectSuspiciousness(suspiciousnesses);
       final Base base = makeBase(suspiciousness);
       final Gene gene = makeGene(variant.getGene(), base);
       final HistoricalElement element = new MutationHistoricalElement(variant, base);
@@ -66,6 +62,14 @@ public class ReorderingMutation extends Mutation {
     }
 
     return generatedVariants;
+  }
+
+  private Suspiciousness selectSuspiciousness(final List<Suspiciousness> suspiciousnesses) {
+    final Function<Suspiciousness, Double> weightFunction = susp -> Math.pow(susp.getValue(), 2);
+    final Roulette<Suspiciousness> suspiciousnessRoulette =
+        new Roulette<>(suspiciousnesses, weightFunction, random);
+
+    return suspiciousnessRoulette.exec();
   }
 
   private Base makeBase(Suspiciousness suspiciousness) {
