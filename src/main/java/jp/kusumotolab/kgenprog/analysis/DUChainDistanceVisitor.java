@@ -75,10 +75,13 @@ public class DUChainDistanceVisitor extends ASTVisitor {
       if (isSwitchStatement(current.getParent())) {
         distance += ((SwitchStatement) current.getParent()).statements()
             .indexOf(current) + 1;
-      } else if (!isBlockStatement(current)) {
+      } else if (isBlockStatement(current.getParent())) {
         final Block parentBlock = (Block) current.getParent();
         distance += parentBlock.statements()
             .indexOf(current) + 1;
+        current = current.getParent();
+      } else {
+        distance += 1;
       }
       current = current.getParent();
     }
