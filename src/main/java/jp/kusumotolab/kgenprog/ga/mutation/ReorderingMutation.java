@@ -65,11 +65,13 @@ public class ReorderingMutation extends Mutation {
   }
 
   private Suspiciousness selectSuspiciousness(final List<Suspiciousness> suspiciousnesses) {
-    final Function<Suspiciousness, Double> weightFunction = susp -> Math.pow(susp.getValue(), 2);
-    final Roulette<Suspiciousness> suspiciousnessRoulette =
-        new Roulette<>(suspiciousnesses, weightFunction, random);
+//    final Function<Suspiciousness, Double> weightFunction = susp -> Math.pow(susp.getValue(), 2);
+//    final Roulette<Suspiciousness> suspiciousnessRoulette =
+//        new Roulette<>(suspiciousnesses, weightFunction, random);
+//
+//    return suspiciousnessRoulette.exec();
 
-    return suspiciousnessRoulette.exec();
+    return suspiciousnesses.get(random.nextInt(suspiciousnesses.size()));
   }
 
   private Base makeBase(Suspiciousness suspiciousness) {
