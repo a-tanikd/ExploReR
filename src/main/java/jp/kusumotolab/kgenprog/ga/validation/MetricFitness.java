@@ -26,6 +26,10 @@ public class MetricFitness implements Fitness {
     INITIAL_METRIC = initialFitness.getValue();
   }
 
+  public boolean isImproved() {
+    return testSuccessRate == 1.0 && metric < INITIAL_METRIC;
+  }
+
   @Override
   public double getValue() {
     return metric;
@@ -33,7 +37,7 @@ public class MetricFitness implements Fitness {
 
   @Override
   public boolean isMaximum() {
-    return testSuccessRate == 1.0 && metric < INITIAL_METRIC;
+    return false;
   }
 
   @Override

@@ -2,6 +2,7 @@ package jp.kusumotolab.kgenprog;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -139,8 +140,12 @@ public class KGenProgMain {
 
   private void logPatch(final VariantStore variantStore) {
     final PatchStore patchStore = new PatchStore();
-    final List<Variant> completedVariants =
-        variantStore.getFoundSolutions(config.getRequiredSolutionsCount());
+    final List<Variant> completedVariants = variantStore.getCurrentVariants()
+        .stream()
+        .filter(v -> ((MetricFitness) v.getFitness()).isImproved())
+        .sorted(Comparator.comparing(Variant::getFitness))
+        .limit(config.getRequiredSolutionsCount())
+        .collect(Collectors.toList());
 
     for (final Variant completedVariant : completedVariants) {
       patchStore.add(patchGenerator.exec(completedVariant));
