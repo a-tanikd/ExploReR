@@ -34,8 +34,8 @@ public class ReorderingMutation extends Mutation {
   public List<Variant> exec(final VariantStore variantStore) {
 
     final List<Variant> currentVariants = variantStore.getCurrentVariants();
-    final Roulette<Variant> variantRoulette = new Roulette<>(currentVariants, e -> {
-      final Fitness fitness = e.getFitness();
+    final Roulette<Variant> variantRoulette = new Roulette<>(currentVariants, variant -> {
+      final Fitness fitness = variant.getFitness();
       final double value = fitness.getValue();
       return Double.isNaN(value) ? 0 : value + 1;
     }, random);
