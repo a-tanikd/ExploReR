@@ -34,8 +34,8 @@ public class ReorderingMutation extends Mutation {
   public List<Variant> exec(final VariantStore variantStore) {
 
     final List<Variant> currentVariants = variantStore.getCurrentVariants();
-    final Roulette<Variant> variantRoulette = new Roulette<>(currentVariants, e -> {
-      final Fitness fitness = e.getFitness();
+    final Roulette<Variant> variantRoulette = new Roulette<>(currentVariants, variant -> {
+      final Fitness fitness = variant.getFitness();
       final double value = fitness.getValue();
       return Double.isNaN(value) ? 0 : value + 1;
     }, random);
@@ -53,11 +53,7 @@ public class ReorderingMutation extends Mutation {
       setCandidates(variant.getGeneratedSourceCode()
           .getProductAsts());
 
-      final Function<Suspiciousness, Double> weightFunction = susp -> Math.pow(susp.getValue(), 2);
-      final Roulette<Suspiciousness> suspiciousnessRoulette =
-          new Roulette<>(suspiciousnesses, weightFunction, random);
-
-      final Suspiciousness suspiciousness = suspiciousnessRoulette.exec();
+      final Suspiciousness suspiciousness = selectSuspiciousness(suspiciousnesses);
       final Base base = makeBase(suspiciousness);
       final Gene gene = makeGene(variant.getGene(), base);
       final HistoricalElement element = new MutationHistoricalElement(variant, base);
@@ -66,6 +62,16 @@ public class ReorderingMutation extends Mutation {
     }
 
     return generatedVariants;
+  }
+
+  private Suspiciousness selectSuspiciousness(final List<Suspiciousness> suspiciousnesses) {
+//    final Function<Suspiciousness, Double> weightFunction = susp -> Math.pow(susp.getValue(), 2);
+//    final Roulette<Suspiciousness> suspiciousnessRoulette =
+//        new Roulette<>(suspiciousnesses, weightFunction, random);
+//
+//    return suspiciousnessRoulette.exec();
+
+    return suspiciousnesses.get(random.nextInt(suspiciousnesses.size()));
   }
 
   private Base makeBase(Suspiciousness suspiciousness) {
