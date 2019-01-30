@@ -96,13 +96,6 @@ public class KGenProgMain {
       logGenerationSummary(stopwatch.toString(), variantsByMutation, variantsByCrossover);
       stopwatch.split();
 
-      // しきい値以上の completedVariants が生成された場合は，GA を抜ける
-      if (areEnoughCompletedVariants(variantStore.getFoundSolutions())) {
-        log.info("enough solutions have been found.");
-        logGAStopped(variantStore.getGenerationNumber());
-        break;
-      }
-
       // 制限時間に達した場合には GA を抜ける
       if (stopwatch.isTimeout()) {
         log.info("GA reached the time limit.");
