@@ -148,6 +148,8 @@ public class KGenProgMain {
         .limit(config.getRequiredSolutionsCount())
         .collect(Collectors.toList());
 
+    log.info("{} improved variants are found.", completedVariants.size());
+
     for (final Variant completedVariant : completedVariants) {
       patchStore.add(patchGenerator.exec(completedVariant));
     }
