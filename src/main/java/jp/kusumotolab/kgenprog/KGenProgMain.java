@@ -153,6 +153,14 @@ public class KGenProgMain {
         .collect(Collectors.toList());
 
     log.info("{} improved variants are found.", completedVariants.size());
+    log.info("fitnesses of these variants: {}", completedVariants.stream()
+        .map(variant -> variant.getFitness()
+            .getValue())
+        .map(v -> Double.toString(v))
+        .collect(Collectors.joining(", ", "[", "]")));
+    log.info("initial metric: {}", variantStore.getInitialVariant()
+        .getFitness()
+        .getValue());
 
     for (final Variant completedVariant : completedVariants) {
       patchStore.add(patchGenerator.exec(completedVariant));
