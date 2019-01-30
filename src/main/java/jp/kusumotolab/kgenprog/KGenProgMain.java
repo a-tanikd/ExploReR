@@ -68,6 +68,9 @@ public class KGenProgMain {
     final VariantStore variantStore = new VariantStore(config, strategies);
     final Variant initialVariant = variantStore.getInitialVariant();
 
+    log.info("initial metric: {}", initialVariant.getFitness()
+        .getValue());
+
     mutation.setCandidates(initialVariant.getGeneratedSourceCode()
         .getProductAsts());
     sourceCodeGeneration.initialize(initialVariant);
