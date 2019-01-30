@@ -144,7 +144,7 @@ public class KGenProgMain {
 
   private void logPatch(final VariantStore variantStore) {
     final PatchStore patchStore = new PatchStore();
-    final List<Variant> completedVariants = variantStore.getCurrentVariants()
+    final List<Variant> completedVariants = variantStore.getFoundSolutions()
         .stream()
         .filter(Variant::isBuildSucceeded)
         .filter(v -> ((MetricFitness) v.getFitness()).isImproved())
