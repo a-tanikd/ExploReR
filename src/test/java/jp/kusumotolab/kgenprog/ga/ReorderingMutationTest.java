@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -142,10 +141,10 @@ public class ReorderingMutationTest {
 
     final MoveAfterOperation moveAfterOperation = (MoveAfterOperation) operation;
     final Field field = moveAfterOperation.getClass()
-        .getDeclaredField("astNode");
+        .getDeclaredField("ingredient");
     field.setAccessible(true);
-    final ASTNode node = (ASTNode) field.get(operation);
-    assertThat(node).isSameSourceCodeAs("return n;");
+    final JDTASTLocation ingredient = (JDTASTLocation) field.get(operation);
+    assertThat(ingredient.node).isSameSourceCodeAs("return n;");
 
   }
 

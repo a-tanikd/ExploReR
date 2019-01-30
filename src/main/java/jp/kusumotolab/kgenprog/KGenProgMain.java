@@ -2,6 +2,7 @@ package jp.kusumotolab.kgenprog;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -67,11 +68,15 @@ public class KGenProgMain {
     final VariantStore variantStore = new VariantStore(config, strategies);
     final Variant initialVariant = variantStore.getInitialVariant();
 
+    log.info("initial metric: {}", initialVariant.getFitness()
+        .getValue());
+
     mutation.setCandidates(initialVariant.getGeneratedSourceCode()
         .getProductAsts());
     sourceCodeGeneration.initialize(initialVariant);
 
-    MetricFitness.init(initialVariant.getGeneratedSourceCode(), sourceCodeValidation);
+    MetricFitness.init(initialVariant.getFitness()
+        .getValue());
 
     final StopWatch stopwatch = new StopWatch(config.getTimeLimitSeconds());
     stopwatch.start();
@@ -90,13 +95,6 @@ public class KGenProgMain {
       // 世代別サマリの出力
       logGenerationSummary(stopwatch.toString(), variantsByMutation, variantsByCrossover);
       stopwatch.split();
-
-      // しきい値以上の completedVariants が生成された場合は，GA を抜ける
-      if (areEnoughCompletedVariants(variantStore.getFoundSolutions())) {
-        log.info("enough solutions have been found.");
-        logGAStopped(variantStore.getGenerationNumber());
-        break;
-      }
 
       // 制限時間に達した場合には GA を抜ける
       if (stopwatch.isTimeout()) {
@@ -139,8 +137,23 @@ public class KGenProgMain {
 
   private void logPatch(final VariantStore variantStore) {
     final PatchStore patchStore = new PatchStore();
-    final List<Variant> completedVariants =
-        variantStore.getFoundSolutions(config.getRequiredSolutionsCount());
+    final List<Variant> completedVariants = variantStore.getFoundSolutions()
+        .stream()
+        .filter(Variant::isBuildSucceeded)
+        .filter(v -> ((MetricFitness) v.getFitness()).isImproved())
+        .sorted(Comparator.comparing(Variant::getFitness))
+        .limit(config.getRequiredSolutionsCount())
+        .collect(Collectors.toList());
+
+    log.info("{} improved variants are found.", completedVariants.size());
+    log.info("fitnesses of these variants: {}", completedVariants.stream()
+        .map(variant -> variant.getFitness()
+            .getValue())
+        .map(v -> Double.toString(v))
+        .collect(Collectors.joining(", ", "[", "]")));
+    log.info("initial metric: {}", variantStore.getInitialVariant()
+        .getFitness()
+        .getValue());
 
     for (final Variant completedVariant : completedVariants) {
       patchStore.add(patchGenerator.exec(completedVariant));

@@ -1,8 +1,5 @@
 package jp.kusumotolab.kgenprog.ga.validation;
 
-import jp.kusumotolab.kgenprog.project.GeneratedSourceCode;
-import jp.kusumotolab.kgenprog.project.test.EmptyTestResults;
-
 public class MetricFitness implements Fitness {
 
   private static double INITIAL_METRIC = -1;
@@ -15,15 +12,17 @@ public class MetricFitness implements Fitness {
     this.testSuccessRate = testSuccessRate;
   }
 
-  public static void init(GeneratedSourceCode sourceCode,
-      SourceCodeValidation validation) {
+  public static void init(double fitness) {
 
     if (INITIAL_METRIC != -1) {
       throw new UnsupportedOperationException();
     }
 
-    Fitness initialFitness = validation.exec(sourceCode, EmptyTestResults.instance);
-    INITIAL_METRIC = initialFitness.getValue();
+    INITIAL_METRIC = fitness;
+  }
+
+  public boolean isImproved() {
+    return testSuccessRate == 1.0 && metric < INITIAL_METRIC;
   }
 
   @Override
@@ -33,7 +32,7 @@ public class MetricFitness implements Fitness {
 
   @Override
   public boolean isMaximum() {
-    return testSuccessRate == 1.0 && metric < INITIAL_METRIC;
+    return false;
   }
 
   @Override

@@ -46,11 +46,12 @@ public class MoveAfterOperationTest {
         .get(0); // "int i = 0;"
     final JDTASTLocation location = new JDTASTLocation(sourcePath, statement1, ast);
 
-    // 移動するNodeを生成
+    // 移動するNodeのLocation生成
     final Statement statement2 = (Statement) method.getBody()
         .statements()
         .get(2); // "int k = 2;"
-    final JDTOperation operation = new MoveAfterOperation(statement2);
+    final JDTASTLocation ingredient = new JDTASTLocation(sourcePath, statement2, ast);
+    final JDTOperation operation = new MoveAfterOperation(ingredient);
 
     final GeneratedSourceCode appliedSourceCode = operation.apply(generatedSourceCode, location);
     final GeneratedJDTAST<ProductSourcePath> appliedAst =
@@ -106,11 +107,12 @@ public class MoveAfterOperationTest {
         .get(2); // int k = 2;
     final JDTASTLocation location = new JDTASTLocation(sourcePath, statement1, ast);
 
-    // 移動するNodeを生成
+    // 移動するNodeのLocation生成
     final Statement statement2 = (Statement) method.getBody()
         .statements()
         .get(0); // int i = 0;
-    final JDTOperation operation = new MoveAfterOperation(statement2);
+    final JDTASTLocation ingredient = new JDTASTLocation(sourcePath, statement2, ast);
+    final JDTOperation operation = new MoveAfterOperation(ingredient);
 
     final GeneratedSourceCode appliedSourceCode = operation.apply(generatedSourceCode, location);
     final GeneratedJDTAST<ProductSourcePath> appliedAst =

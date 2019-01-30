@@ -3,8 +3,6 @@ package jp.kusumotolab.kgenprog.ga.mutation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Statement;
 import jp.kusumotolab.kgenprog.fl.Suspiciousness;
 import jp.kusumotolab.kgenprog.ga.Roulette;
@@ -18,7 +16,7 @@ import jp.kusumotolab.kgenprog.ga.variant.MutationHistoricalElement;
 import jp.kusumotolab.kgenprog.ga.variant.Variant;
 import jp.kusumotolab.kgenprog.ga.variant.VariantStore;
 import jp.kusumotolab.kgenprog.project.FullyQualifiedName;
-import jp.kusumotolab.kgenprog.project.GeneratedAST;
+import jp.kusumotolab.kgenprog.project.jdt.GeneratedJDTAST;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 import jp.kusumotolab.kgenprog.project.jdt.JDTOperation;
 import jp.kusumotolab.kgenprog.project.jdt.MoveAfterOperation;
@@ -54,7 +52,7 @@ public class ReorderingMutation extends Mutation {
           .getProductAsts());
 
       final Suspiciousness suspiciousness = selectSuspiciousness(suspiciousnesses);
-      final Base base = makeBase(suspiciousness);
+      final Base base = makeBase((JDTASTLocation) suspiciousness.getLocation());
       final Gene gene = makeGene(variant.getGene(), base);
       final HistoricalElement element = new MutationHistoricalElement(variant, base);
 
@@ -74,21 +72,27 @@ public class ReorderingMutation extends Mutation {
     return suspiciousnesses.get(random.nextInt(suspiciousnesses.size()));
   }
 
-  private Base makeBase(Suspiciousness suspiciousness) {
-    final JDTASTLocation location = (JDTASTLocation) suspiciousness.getLocation();
-    final JDTOperation operation = new MoveAfterOperation(chooseNodeAtRandom(location));
+  private Base makeBase(JDTASTLocation location) {
+    final JDTOperation operation = new MoveAfterOperation(selectIngredientLocation(location));
 
     return new Base(location, operation);
   }
 
-  private ASTNode chooseNodeAtRandom(final JDTASTLocation location) {
-    final GeneratedAST<?> generatedAST = location.getGeneratedAST();
+  private JDTASTLocation selectIngredientLocation(final JDTASTLocation location) {
+    final GeneratedJDTAST<?> generatedAST = ((GeneratedJDTAST) location.getGeneratedAST());
     final FullyQualifiedName fqn = generatedAST.getPrimaryClassName();
     final Statement statement = (Statement) location.node;
     final MethodName methodName = new MethodName(fqn, statement);
+
+    if (methodName.getMethodName()
+        .isEmpty()) {
+      throw new IllegalStateException("cannot retrieve reuse candidate.");
+    }
+
     final Scope scope = new Scope(type, methodName);
 
-    return candidateSelection.exec(scope);
+    return new JDTASTLocation(location.getSourcePath(), candidateSelection.exec(scope),
+        generatedAST);
   }
 
   private Gene makeGene(final Gene parent, final Base base) {
