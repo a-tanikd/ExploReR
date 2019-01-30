@@ -142,6 +142,7 @@ public class KGenProgMain {
     final PatchStore patchStore = new PatchStore();
     final List<Variant> completedVariants = variantStore.getCurrentVariants()
         .stream()
+        .filter(Variant::isBuildSucceeded)
         .filter(v -> ((MetricFitness) v.getFitness()).isImproved())
         .sorted(Comparator.comparing(Variant::getFitness))
         .limit(config.getRequiredSolutionsCount())
