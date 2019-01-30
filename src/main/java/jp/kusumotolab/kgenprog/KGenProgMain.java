@@ -72,7 +72,8 @@ public class KGenProgMain {
         .getProductAsts());
     sourceCodeGeneration.initialize(initialVariant);
 
-    MetricFitness.init(initialVariant.getGeneratedSourceCode(), sourceCodeValidation);
+    MetricFitness.init(initialVariant.getFitness()
+        .getValue());
 
     final StopWatch stopwatch = new StopWatch(config.getTimeLimitSeconds());
     stopwatch.start();
