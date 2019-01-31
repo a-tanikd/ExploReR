@@ -21,13 +21,13 @@ import jp.kusumotolab.kgenprog.project.ProductSourcePath;
 public abstract class StatementSelection implements CandidateSelection {
 
   private final Random random;
-  private Roulette<ReuseCandidate<Statement>> projectRoulette;
-  private final Multimap<String, ReuseCandidate<Statement>> packageNameStatementMultimap = ArrayListMultimap.create();
-  private final Multimap<FullyQualifiedName, ReuseCandidate<Statement>> fqnStatementMultiMap = ArrayListMultimap.create();
-  private final Multimap<MethodName, ReuseCandidate<Statement>> methodNameStatementMultimap = ArrayListMultimap.create();
-  private final Map<String, Roulette<ReuseCandidate<Statement>>> packageNameRouletteMap = new HashMap<>();
-  private final Map<FullyQualifiedName, Roulette<ReuseCandidate<Statement>>> fqnRouletteMap = new HashMap<>();
-  private final Map<MethodName, Roulette<ReuseCandidate<Statement>>> methodNameRouletteMap = new HashMap<>();
+  private Roulette<ReuseCandidate<Statement>> projectLevelCandidateRoulette;
+  private final Multimap<String, ReuseCandidate<Statement>> packageToCandidates = ArrayListMultimap.create();
+  private final Multimap<FullyQualifiedName, ReuseCandidate<Statement>> fileToCandidates = ArrayListMultimap.create();
+  private final Multimap<MethodName, ReuseCandidate<Statement>> methodToCandidates = ArrayListMultimap.create();
+  private final Map<String, Roulette<ReuseCandidate<Statement>>> packageLevelCandidateRouletteCache = new HashMap<>();
+  private final Map<FullyQualifiedName, Roulette<ReuseCandidate<Statement>>> fileLevelCandidateRouletteCache = new HashMap<>();
+  private final Map<MethodName, Roulette<ReuseCandidate<Statement>>> methodLevelCandidateRouletteCache = new HashMap<>();
 
   public StatementSelection(final Random random) {
     this.random = random;
@@ -38,9 +38,9 @@ public abstract class StatementSelection implements CandidateSelection {
     final StatementVisitor visitor = new StatementVisitor(candidates);
     final List<ReuseCandidate<Statement>> reuseCandidates = visitor.getReuseCandidateList();
 
-    putMaps(reuseCandidates);
+    clearAndSetCandidates(reuseCandidates);
 
-    projectRoulette = createRoulette(reuseCandidates);
+    projectLevelCandidateRoulette = createRoulette(reuseCandidates);
   }
 
   public abstract double getStatementWeight(final ReuseCandidate<Statement> reuseCandidate);
@@ -52,44 +52,56 @@ public abstract class StatementSelection implements CandidateSelection {
     return candidate.getValue();
   }
 
-  private void putMaps(final List<ReuseCandidate<Statement>> reuseCandidates) {
+  private void clearAndSetCandidates(final List<ReuseCandidate<Statement>> reuseCandidates) {
+    packageToCandidates.clear();
+    fileToCandidates.clear();
+    methodToCandidates.clear();
+
+    packageLevelCandidateRouletteCache.clear();
+    fileLevelCandidateRouletteCache.clear();
+    methodLevelCandidateRouletteCache.clear();
+
     for (final ReuseCandidate<Statement> reuseCandidate : reuseCandidates) {
-      packageNameStatementMultimap.put(reuseCandidate.getPackageName(), reuseCandidate);
-      fqnStatementMultiMap.put(reuseCandidate.getFqn(), reuseCandidate);
+      packageToCandidates.put(reuseCandidate.getPackageName(), reuseCandidate);
+      fileToCandidates.put(reuseCandidate.getFqn(), reuseCandidate);
 
       final MethodName methodName = new MethodName(reuseCandidate);
       if (!Strings.isNullOrEmpty(methodName.getMethodName())) {
-        methodNameStatementMultimap.put(methodName, reuseCandidate);
+        methodToCandidates.put(methodName, reuseCandidate);
       }
     }
   }
 
   private Roulette<ReuseCandidate<Statement>> getRouletteInProjectScope() {
-    return projectRoulette;
+    return projectLevelCandidateRoulette;
   }
 
   private Roulette<ReuseCandidate<Statement>> getRouletteInPackage(final String packageName) {
-    return getRoulette(packageName, packageNameRouletteMap, packageNameStatementMultimap);
+    return getRoulette(packageName, packageLevelCandidateRouletteCache,
+        packageToCandidates);
   }
 
   private Roulette<ReuseCandidate<Statement>> getRouletteInFile(final FullyQualifiedName fqn) {
-    return getRoulette(fqn, fqnRouletteMap, fqnStatementMultiMap);
+    return getRoulette(fqn, fileLevelCandidateRouletteCache, fileToCandidates);
   }
 
   private Roulette<ReuseCandidate<Statement>> getRouletteInMethod(final MethodName methodName) {
-    return getRoulette(methodName, methodNameRouletteMap, methodNameStatementMultimap);
+    return getRoulette(methodName, methodLevelCandidateRouletteCache, methodToCandidates);
   }
 
+  /**
+   * 指定された key に対応する CandidateRoulette を返す
+   */
   private <T> Roulette<ReuseCandidate<Statement>> getRoulette(final T key,
-      final Map<T, Roulette<ReuseCandidate<Statement>>> rouletteMap,
+      final Map<T, Roulette<ReuseCandidate<Statement>>> rouletteCache,
       final Multimap<T, ReuseCandidate<Statement>> candidateMap) {
-    Roulette<ReuseCandidate<Statement>> roulette = rouletteMap.get(key);
+    Roulette<ReuseCandidate<Statement>> roulette = rouletteCache.get(key);
     if (roulette != null) {
       return roulette;
     }
     final Collection<ReuseCandidate<Statement>> candidates = candidateMap.get(key);
     roulette = createRoulette(new ArrayList<>(candidates));
-    rouletteMap.put(key, roulette);
+    rouletteCache.put(key, roulette);
     return roulette;
   }
 
