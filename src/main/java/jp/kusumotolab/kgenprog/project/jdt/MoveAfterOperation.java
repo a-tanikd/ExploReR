@@ -32,10 +32,9 @@ public class MoveAfterOperation extends JDTOperation {
       throw new UnsupportedOperationException("cannot move parent node after child node.");
     }
 
-    final ASTNode copiedSrc = ASTNode.copySubtree(astRewrite.getAST(), src);
-
     final ListRewrite listRewrite = astRewrite.getListRewrite(dest.getParent(),
         (ChildListPropertyDescriptor) dest.getLocationInParent());
+    final ASTNode copiedSrc = ASTNode.copySubtree(astRewrite.getAST(), src);
 
     listRewrite.insertAfter(copiedSrc, dest, null);
     astRewrite.remove(src, null);
