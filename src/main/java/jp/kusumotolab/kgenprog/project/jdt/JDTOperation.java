@@ -30,7 +30,7 @@ public abstract class JDTOperation implements Operation {
           .map(ast -> applyEachAST(ast, location))
           .collect(Collectors.toList());
       return new GeneratedSourceCode(newASTs, generatedSourceCode.getTestAsts());
-    } catch (final Exception e) {
+    } catch (final RuntimeException e) {
       log.debug("Opperation failed: {}", e.getMessage());
       log.trace("Trace:", e);
       return createGenerationFailedSourceCode(e);
