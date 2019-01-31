@@ -28,6 +28,10 @@ public class MoveAfterOperation extends JDTOperation {
     log.debug("src : {} -> {}", this.src.node.toString(), src.toString());
     log.debug("dest: {} -> {}", location.node.toString(), dest.toString());
 
+    if (isChildOf(dest, src)) {
+      throw new UnsupportedOperationException("cannot move parent node after child node.");
+    }
+
     final ASTNode copiedSrc = ASTNode.copySubtree(astRewrite.getAST(), src);
 
     final ListRewrite listRewrite = astRewrite.getListRewrite(dest.getParent(),
@@ -37,4 +41,19 @@ public class MoveAfterOperation extends JDTOperation {
     astRewrite.remove(src, null);
   }
 
+  private boolean isChildOf(final ASTNode mayBeChild, final ASTNode mayBeParent) {
+    ASTNode current = mayBeChild;
+    while (!isMethodDeclaration(current)) {
+      if (current == mayBeParent) {
+        return true;
+      }
+      current = current.getParent();
+    }
+
+    return false;
+  }
+
+  private boolean isMethodDeclaration(final ASTNode node) {
+    return node.getNodeType() == ASTNode.METHOD_DECLARATION;
+  }
 }
