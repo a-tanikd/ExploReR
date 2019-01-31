@@ -12,29 +12,29 @@ public class MoveAfterOperation extends JDTOperation {
 
   private static final Logger log = LoggerFactory.getLogger(MoveAfterOperation.class);
 
-  private final JDTASTLocation ingredient;
+  private final JDTASTLocation src;
 
-  public MoveAfterOperation(final JDTASTLocation ingredient) {
-    this.ingredient = ingredient;
+  public MoveAfterOperation(final JDTASTLocation src) {
+    this.src = src;
   }
 
   @Override
   protected <T extends SourcePath> void applyToASTRewrite(final GeneratedJDTAST<T> ast,
       final JDTASTLocation location, final ASTRewrite astRewrite) {
 
-    final ASTNode target1 = location.locate(ast.getRoot());
-    final ASTNode target2 = ingredient.locate(ast.getRoot());
+    final ASTNode dest = location.locate(ast.getRoot());
+    final ASTNode src = this.src.locate(ast.getRoot());
 
-    log.debug("src : {} -> {}", ingredient.node.toString(), target2.toString());
-    log.debug("dest: {} -> {}", location.node.toString(), target1.toString());
+    log.debug("src : {} -> {}", this.src.node.toString(), src.toString());
+    log.debug("dest: {} -> {}", location.node.toString(), dest.toString());
 
-    final ASTNode copiedTarget2 = ASTNode.copySubtree(astRewrite.getAST(), target2);
+    final ASTNode copiedSrc = ASTNode.copySubtree(astRewrite.getAST(), src);
 
-    final ListRewrite listRewrite = astRewrite.getListRewrite(target1.getParent(),
-        (ChildListPropertyDescriptor) target1.getLocationInParent());
+    final ListRewrite listRewrite = astRewrite.getListRewrite(dest.getParent(),
+        (ChildListPropertyDescriptor) dest.getLocationInParent());
 
-    listRewrite.insertAfter(copiedTarget2, target1, null);
-    astRewrite.remove(target2, null);
+    listRewrite.insertAfter(copiedSrc, dest, null);
+    astRewrite.remove(src, null);
   }
 
 }
