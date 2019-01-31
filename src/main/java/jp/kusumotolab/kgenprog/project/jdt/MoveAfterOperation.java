@@ -37,8 +37,4 @@ public class MoveAfterOperation extends JDTOperation {
     astRewrite.remove(target2, null);
   }
 
-//  @Override
-//  public String getName() {
-//    return "move after";
-//  }
 }
