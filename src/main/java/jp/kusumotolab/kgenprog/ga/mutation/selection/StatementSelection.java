@@ -38,7 +38,7 @@ public abstract class StatementSelection implements CandidateSelection {
     final StatementVisitor visitor = new StatementVisitor(candidates);
     final List<ReuseCandidate<Statement>> reuseCandidates = visitor.getReuseCandidateList();
 
-    putMaps(reuseCandidates);
+    clearAndSetCandidates(reuseCandidates);
 
     projectLevelCandidateRoulette = createRoulette(reuseCandidates);
   }
@@ -52,7 +52,15 @@ public abstract class StatementSelection implements CandidateSelection {
     return candidate.getValue();
   }
 
-  private void putMaps(final List<ReuseCandidate<Statement>> reuseCandidates) {
+  private void clearAndSetCandidates(final List<ReuseCandidate<Statement>> reuseCandidates) {
+    packageToCandidates.clear();
+    fileToCandidates.clear();
+    methodToCandidates.clear();
+
+    packageLevelCandidateRouletteCache.clear();
+    fileLevelCandidateRouletteCache.clear();
+    methodLevelCandidateRouletteCache.clear();
+
     for (final ReuseCandidate<Statement> reuseCandidate : reuseCandidates) {
       packageToCandidates.put(reuseCandidate.getPackageName(), reuseCandidate);
       fileToCandidates.put(reuseCandidate.getFqn(), reuseCandidate);
