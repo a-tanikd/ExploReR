@@ -21,6 +21,7 @@ public class MetricVariantSelection implements VariantSelection {
         .thenComparing(Variant::isSyntaxValid, Comparator.reverseOrder())
         .thenComparing(Variant::getFitness);
     return Stream.concat(current.stream(), generated.stream())
+        .filter(Variant::isBuildSucceeded)
         .sorted(comparator)
         .limit(maxVariantsPerGeneration)
         .collect(Collectors.toList());
