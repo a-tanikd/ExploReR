@@ -4,7 +4,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
-import jp.kusumotolab.kgenprog.fl.DUChainDistanceLocalization;
+import jp.kusumotolab.kgenprog.fl.DUChainDistanceLocalizationForSimpleStatement;
 import jp.kusumotolab.kgenprog.fl.FaultLocalization;
 import jp.kusumotolab.kgenprog.ga.codegeneration.DefaultSourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.codegeneration.SourceCodeGeneration;
@@ -40,7 +40,7 @@ public class CUILauncher {
     setLogLevel(config.getLogLevel());
 
     final FaultLocalization faultLocalization =
-        new DUChainDistanceLocalization(config.getRefactoredMethod());
+        new DUChainDistanceLocalizationForSimpleStatement(config.getRefactoredMethod());
     final Random random = new Random(config.getRandomSeed());
     final RouletteStatementSelection rouletteStatementSelection =
         new RouletteStatementSelection(random);

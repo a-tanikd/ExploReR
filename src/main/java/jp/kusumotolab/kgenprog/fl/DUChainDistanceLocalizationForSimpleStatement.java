@@ -9,9 +9,10 @@ import jp.kusumotolab.kgenprog.project.ASTLocation;
 import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedMethodName;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 
-public class DUChainDistanceLocalization extends SmellLocalization {
+public class DUChainDistanceLocalizationForSimpleStatement extends SmellLocalization {
 
-  public DUChainDistanceLocalization(final TargetFullyQualifiedMethodName refactoredMethodName) {
+  public DUChainDistanceLocalizationForSimpleStatement(
+      final TargetFullyQualifiedMethodName refactoredMethodName) {
     super(refactoredMethodName);
   }
 

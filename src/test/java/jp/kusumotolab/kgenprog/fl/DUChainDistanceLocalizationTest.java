@@ -21,7 +21,7 @@ public class DUChainDistanceLocalizationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final FaultLocalization fl = new DUChainDistanceLocalization(
+    final FaultLocalization fl = new DUChainDistanceLocalizationForSimpleStatement(
         new TargetFullyQualifiedMethodName("example.Foo#foo"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
@@ -37,7 +37,7 @@ public class DUChainDistanceLocalizationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final FaultLocalization fl = new DUChainDistanceLocalization(
+    final FaultLocalization fl = new DUChainDistanceLocalizationForSimpleStatement(
         new TargetFullyQualifiedMethodName("example.Foo#foo"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
@@ -53,7 +53,7 @@ public class DUChainDistanceLocalizationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final FaultLocalization fl = new DUChainDistanceLocalization(
+    final FaultLocalization fl = new DUChainDistanceLocalizationForSimpleStatement(
         new TargetFullyQualifiedMethodName("example.GeometricMean#geometricMean"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
@@ -69,7 +69,7 @@ public class DUChainDistanceLocalizationTest {
     final Configuration config = new Configuration.Builder(targetProject).build();
     final Variant initialVariant = TestUtil.createVariant(config);
 
-    final FaultLocalization fl = new DUChainDistanceLocalization(
+    final FaultLocalization fl = new DUChainDistanceLocalizationForSimpleStatement(
         new TargetFullyQualifiedMethodName("example.Max3#max3"));
     final List<Suspiciousness> suspiciousnesses =
         fl.exec(initialVariant.getGeneratedSourceCode(), initialVariant.getTestResults());
