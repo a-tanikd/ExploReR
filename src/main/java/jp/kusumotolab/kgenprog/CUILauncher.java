@@ -4,7 +4,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
-import jp.kusumotolab.kgenprog.fl.DUChainDistanceLocalizationForSimpleStatement;
+import jp.kusumotolab.kgenprog.fl.DUChainDistanceLocalization;
 import jp.kusumotolab.kgenprog.fl.FaultLocalization;
 import jp.kusumotolab.kgenprog.ga.codegeneration.DefaultSourceCodeGeneration;
 import jp.kusumotolab.kgenprog.ga.codegeneration.SourceCodeGeneration;
@@ -14,7 +14,8 @@ import jp.kusumotolab.kgenprog.ga.crossover.RandomCrossover;
 import jp.kusumotolab.kgenprog.ga.crossover.SecondVariantRandomSelection;
 import jp.kusumotolab.kgenprog.ga.mutation.Mutation;
 import jp.kusumotolab.kgenprog.ga.mutation.ReorderingMutation;
-import jp.kusumotolab.kgenprog.ga.mutation.selection.RouletteStatementSelection;
+import jp.kusumotolab.kgenprog.ga.mutation.selection.StatementSelection;
+import jp.kusumotolab.kgenprog.ga.mutation.selection.VariableDeclarationSelection;
 import jp.kusumotolab.kgenprog.ga.selection.MetricVariantSelection;
 import jp.kusumotolab.kgenprog.ga.selection.VariantSelection;
 import jp.kusumotolab.kgenprog.ga.validation.DUChainDistanceValidation;
@@ -40,12 +41,11 @@ public class CUILauncher {
     setLogLevel(config.getLogLevel());
 
     final FaultLocalization faultLocalization =
-        new DUChainDistanceLocalizationForSimpleStatement(config.getRefactoredMethod());
+        new DUChainDistanceLocalization(config.getRefactoredMethod());
     final Random random = new Random(config.getRandomSeed());
-    final RouletteStatementSelection rouletteStatementSelection =
-        new RouletteStatementSelection(random);
+    final StatementSelection statementSelection = new VariableDeclarationSelection(random);
     final Mutation mutation = new ReorderingMutation(config.getMutationGeneratingCount(), random,
-        rouletteStatementSelection);
+        statementSelection);
     final Crossover crossover = new RandomCrossover(random, new FirstVariantRandomSelection(random),
         new SecondVariantRandomSelection(random), config.getCrossoverGeneratingCount());
     final SourceCodeGeneration sourceCodeGeneration = new DefaultSourceCodeGeneration();
