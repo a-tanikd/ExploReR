@@ -141,7 +141,7 @@ public class ReorderingMutationTest {
 
     final MoveAfterOperation moveAfterOperation = (MoveAfterOperation) operation;
     final Field field = moveAfterOperation.getClass()
-        .getDeclaredField("ingredient");
+        .getDeclaredField("src");
     field.setAccessible(true);
     final JDTASTLocation ingredient = (JDTASTLocation) field.get(operation);
     assertThat(ingredient.node).isSameSourceCodeAs("return n;");
