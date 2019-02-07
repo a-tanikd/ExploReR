@@ -20,6 +20,7 @@ import jp.kusumotolab.kgenprog.project.jdt.GeneratedJDTAST;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 import jp.kusumotolab.kgenprog.project.jdt.JDTOperation;
 import jp.kusumotolab.kgenprog.project.jdt.MoveAfterOperation;
+import jp.kusumotolab.kgenprog.project.jdt.MoveBeforeOperation;
 
 public class ReorderingMutation extends Mutation {
 
@@ -73,9 +74,23 @@ public class ReorderingMutation extends Mutation {
   }
 
   private Base makeBase(JDTASTLocation location) {
-    final JDTOperation operation = new MoveAfterOperation(selectIngredientLocation(location));
+    final JDTASTLocation srcLocation = selectIngredientLocation(location);
+    final JDTOperation operation = makeOperationRandomly(srcLocation);
 
     return new Base(location, operation);
+  }
+
+  private JDTOperation makeOperationRandomly(JDTASTLocation srcLocation) {
+    final int randomNumber = random.nextInt(2);
+    switch (randomNumber) {
+      case 0:
+        return new MoveBeforeOperation(srcLocation);
+      case 1:
+        return new MoveAfterOperation(srcLocation);
+      default:
+        throw new IllegalStateException("cannot make Operation");
+    }
+
   }
 
   private JDTASTLocation selectIngredientLocation(final JDTASTLocation location) {
