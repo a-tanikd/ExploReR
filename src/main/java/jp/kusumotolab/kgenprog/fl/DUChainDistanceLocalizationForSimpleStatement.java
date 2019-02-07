@@ -3,13 +3,11 @@ package jp.kusumotolab.kgenprog.fl;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import jp.kusumotolab.kgenprog.analysis.DUChainDistanceVisitor;
 import jp.kusumotolab.kgenprog.project.ASTLocation;
 import jp.kusumotolab.kgenprog.project.TargetFullyQualifiedMethodName;
 import jp.kusumotolab.kgenprog.project.jdt.JDTASTLocation;
 
-public class DUChainDistanceLocalizationForSimpleStatement extends SmellLocalization {
+public class DUChainDistanceLocalizationForSimpleStatement extends DUChainDistanceLocalization {
 
   public DUChainDistanceLocalizationForSimpleStatement(
       final TargetFullyQualifiedMethodName refactoredMethodName) {
@@ -39,14 +37,5 @@ public class DUChainDistanceLocalizationForSimpleStatement extends SmellLocaliza
       default:
         return false;
     }
-  }
-
-  @Override
-  protected double calculateSmell(JDTASTLocation location) {
-    final CompilationUnit compilationUnit = (CompilationUnit) location.node.getRoot();
-    final DUChainDistanceVisitor visitor = new DUChainDistanceVisitor(compilationUnit);
-    location.node.accept(visitor);
-
-    return visitor.getDistance();
   }
 }
