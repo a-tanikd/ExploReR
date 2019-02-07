@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import io.reactivex.Single;
 import jp.kusumotolab.kgenprog.Configuration;
@@ -23,7 +22,6 @@ public class VariantStore {
   private final Strategies strategies;
   private final Variant initialVariant;
   private List<Variant> currentVariants;
-  private final List<Variant> allVariants;
   private List<Variant> generatedVariants;
   private final List<Variant> foundSolutions;
   private final OrdinalNumber generation;
@@ -37,8 +35,6 @@ public class VariantStore {
     generation = new OrdinalNumber(0);
     initialVariant = createInitialVariant();
     currentVariants = Collections.singletonList(initialVariant);
-    allVariants = new LinkedList<>();
-    allVariants.add(initialVariant);
     generatedVariants = new ArrayList<>();
     foundSolutions = new ArrayList<>();
     generation.incrementAndGet();
@@ -54,8 +50,6 @@ public class VariantStore {
     this.initialVariant = initialVariant;
 
     currentVariants = Collections.singletonList(initialVariant);
-    allVariants = new ArrayList<>();
-    allVariants.add(initialVariant);
     generatedVariants = new ArrayList<>();
     foundSolutions = new ArrayList<>();
     generation = new OrdinalNumber(1);
@@ -85,10 +79,6 @@ public class VariantStore {
 
   public List<Variant> getGeneratedVariants() {
     return generatedVariants;
-  }
-
-  public List<Variant> getAllVariants() {
-    return allVariants;
   }
 
   public List<Variant> getFoundSolutions() {
@@ -127,7 +117,6 @@ public class VariantStore {
    */
   public void addGeneratedVariant(final Variant variant) {
 
-    allVariants.add(variant);
     generatedVariants.add(variant);
 
     final MetricFitness fitness = ((MetricFitness) variant.getFitness());
