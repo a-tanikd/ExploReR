@@ -21,7 +21,7 @@ $ java -jar path/to/ExploReR.jar [(-r <path> -s <path>... -t <path>...) | --conf
 | `-r`, `--root-dir` | Specifies the path to the root directory of the target project. It is recommended to specify the current directory after moving into the root directory of the target project, for implementation reason. | Nothing |
 | `-s`, `--src` | Specifies paths to "product" source code (i.e. main, non-test code), or to directories containing them. Paths are separated with spaces. | Nothing |
 | `-t`, `--test` | Specifies paths to test source code, or to directories containing them. Paths are separated with spaces. | Nothing |
-| `--refactored-method | Specifies the method name to be refactored. | Nothing |
+| `--refactored-method` | Specifies the method name to be refactored. | Nothing |
 | `-x`, `--exec-test` | Specifies fully qualified names of test classes executed during evaluation of variants (i.e. refactoring-candidates). Class names are separated with spaces. | All test classes |
 | `-c`, `--cp` | Specifies class paths needed to build the target project. Paths are separated with spaces. | Nothing |
 | `-o`, `--out-dir` | Writes patches ExploReR generated under the specified directory. Patches are outputted to a directory having a name of the execution time and date under the specified directory. | A directory named `kgenprog-out` is created in the current directory. |
